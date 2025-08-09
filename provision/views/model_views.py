@@ -2,27 +2,52 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from provision.serializers.model_serializers import ModelRequest
 from drf_yasg.utils import swagger_auto_schema
 
 
-
 class ModelManagerViews(APIView):
-    def health_check(self, request):
+
+    @swagger_auto_schema(responses={200: "OK"})
+    def get(self, request):
+        """Health check service"""
         return Response({"message": "OK"}, status=status.HTTP_200_OK)
-    def health_model_check(self, request):
+
+
+class HealthModelCheckView(APIView):
+
+    @swagger_auto_schema(responses={200: "OK"})
+    def get(self, request):
         # TODO: health check model
-        pass
-    def train_model(self, request):
+        return Response({"message": "Model OK"}, status=status.HTTP_200_OK)
+
+
+class TrainModelView(APIView):
+
+    @swagger_auto_schema(responses={200: "Training started"})
+    def post(self, request):
         # TODO: train model
-        pass
-    def evaluate_model(self, request):
+        return Response({"message": "Training started"}, status=status.HTTP_200_OK)
+
+
+class EvaluateModelView(APIView):
+
+    @swagger_auto_schema(responses={200: "Evaluation complete"})
+    def post(self, request):
         # TODO: evaluate model
-        pass
-    def save_model(self, request):
+        return Response({"message": "Evaluation complete"}, status=status.HTTP_200_OK)
+
+
+class SaveModelView(APIView):
+
+    @swagger_auto_schema(responses={200: "Model saved"})
+    def post(self, request):
         # TODO: save model
-        pass
-    def save_results(self, request):
+        return Response({"message": "Model saved"}, status=status.HTTP_200_OK)
+
+
+class SaveResultsView(APIView):
+
+    @swagger_auto_schema(responses={200: "Results saved"})
+    def post(self, request):
         # TODO: save results
-        pass
-    
+        return Response({"message": "Results saved"}, status=status.HTTP_200_OK)

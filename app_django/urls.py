@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/user/', include('provision.urls.user_urls')),
     path('api/camera/', include('provision.urls.camera_urls')),
+    path('api/model/', include('provision.urls.model_urls')),
 
     # Swagger & Redoc
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
