@@ -71,6 +71,7 @@ desktop.ini
 # Python virtualenvs
 .venv/
 torch_gpu/
+/migrations/
 
 # Uploads (if temporary and not versioned)
 uploads/
