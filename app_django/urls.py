@@ -1,11 +1,15 @@
-# app_django/urls.py
-
 from django.contrib import admin
-from django.urls import path, include  # 🔥 Bạn quên dòng này trong phiên bản trước
-
+from django.urls import path, include
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from django.shortcuts import redirect
+
+# 🔑 JWT Views
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -17,11 +21,22 @@ schema_view = get_schema_view(
    permission_classes=[permissions.AllowAny],
 )
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/user/', include('provision.urls.user_urls')),
-    path('api/camera/', include('provision.urls.camera_urls')),
-    path('api/model/', include('provision.urls.model_urls')),
+
+    # API versioning
+    path('api/<version>/user/', include('provision.urls.user_urls')),
+    path('api/<version>/camera/', include('provision.urls.camera_urls')),
+    path('api/<version>/model/', include('provision.urls.model_urls')),
+
+    # JWT Authentication
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    # Allauth
+    path('accounts/', lambda request: redirect('/accounts/login/')),
+    path('accounts/', include('allauth.urls')),
 
     # Swagger & Redoc
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

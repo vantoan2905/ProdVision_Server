@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-class CameraRequest(serializers.Serializer):
+class CameraResponseFrom(serializers.Serializer):
     id_camera = serializers.IntegerField()
     key_camera = serializers.CharField()
 

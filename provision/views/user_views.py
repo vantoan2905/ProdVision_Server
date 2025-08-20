@@ -1,38 +1,13 @@
 # provision/views/user_views.py
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
-from django.views import View
-from django.http import JsonResponse
 
-class UserManagerViews(View):
-
-    def login(self, request):
-        # TODO: login
-        pass
-
-    def register(self, request):
-        # TODO: register
-        pass
-
-    def logout(self, request):
-        # TODO: logout
-        pass
-
-    def change_password(self, request):
-        # TODO: change password
-        pass
-
-    def reset_password(self, request):
-        # TODO: reset password
-        pass
-
-    def get_user_info(self, request):
-        # TODO: get user info
-        pass
-
-    def update_user_info(self, request):
-        # TODO: update user info
-        pass
-
+class RefreshTokenView(APIView):
+    def post(self, request):
+        # TODO: refresh token logic
+        return Response({"message": "Token refreshed"}, status=status.HTTP_200_OK)
     
 
 
