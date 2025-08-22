@@ -22,6 +22,9 @@ data/
 .venv/
 docker-compose.yml
 PCB_DATASET_yolo_version/
+yolo-V8-main/
+staticfiles/
+
 
 
 # Installer logs

@@ -9,7 +9,14 @@ ProdVision is a PCB defect detection system using YOLOv8, built with Django. The
 
 ## 🚀 Getting Started
 
-### 1. Clone the project:
+### 1. Clone sever project and client Ui:
+- Client project:
+```bash
+git clone https://github.com/vantoan2905/ProdVision_Ui.git
+cd ProdVision_Ui
+
+```
+- Sever project:
 ```bash
 git clone https://github.com/your-username/ProdVision_django.git
 cd ProdVision_django
