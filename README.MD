@@ -1,11 +1,50 @@
 # Introduction project:
 # ProdVision Django Project
-
 ## 📋 Project Introduction
 
 ProdVision is a PCB defect detection system using YOLOv8, built with Django. The project supports model training, evaluation, and provides an API for PCB image defect detection.
 
-![alt text](provision/media/main_view.png)
+![image.png](/image.png)
+
+# Model
+
+## 1. Model Name and Type
+- **Faster R-CNN + U-Net**  
+- A combination of object detection (Faster R-CNN)   
+
+## 2. Architecture Overview
+- **Backbone**: extracts features from the input image.  
+- **Region Proposal Network (RPN)**: generates candidate regions that may contain objects.  
+- **Detection Head**: performs classification and bounding box regression.  
+- **U-Net**: provides detailed segmentation, enhancing detection quality.  
+
+## 3. Working Mechanism
+- Pipeline: `Input video from camera → Feature Extraction → Region Proposals → Classification + Regression → Segmentation (U-Net)`  
+- Bounding boxes are predicted using an **anchor-based** approach.  
+
+## 4. Advantages
+- High accuracy (AP, mAP, F1-score).  
+- Capable of handling multiple objects and different object sizes.  
+- Supports fine-grained segmentation through U-Net.  
+
+## 5. Limitations
+- Requires significant computational resources (GPU/CPU).  
+- Accuracy decreases for very small or heavily occluded objects.  
+
+## 6. Reason for Selection
+- Well-suited for the dataset in this project (many small objects, real-time environment, limited hardware).  
+- Compared to other models, Faster R-CNN + U-Net provides a strong balance between **accuracy** and **scalability**.  
+
+## 7. Training Information
+- **Dataset**: used for training/finetuning.  
+- **Loss functions**: GIoU Loss, Focal Loss,…  
+- **Optimizers**: SGD, Adam, AdamW.  
+- **Hyperparameters**: batch size, learning rate,…  
+
+
+
+
+
 
 ## 🚀 Getting Started
 
@@ -57,67 +96,6 @@ uvicorn app_django.asgi:application --reload
 docker-compose up --build
 # To stop:
 docker-compose down
-```
-
----
-
-## 🧠 YOLOv8 Training Report
-
-### 1. Model Configuration
-
-- Configuration file: `args.yaml`
-- Includes: model, dataset, epochs, batch size, image size, device, augmentation.
-
-### 2. 📉 Loss & mAP Charts
-
-- `results.png`: Shows loss (box, obj, cls) and mAP50, mAP50-95  
-<img src="src/process/content/runs/detect/train3/results.png" alt="results.png" width="800"/>
-
----
-
-### 3. 🎯 Per-Class Accuracy
-
-- `BoxF1_curve.png`  
-<img src="src/process/content/runs/detect/train3/BoxF1_curve.png" alt="F1 Curve" width="600"/>
-
-- `BoxP_curve.png`  
-<img src="src/process/content/runs/detect/train3/BoxP_curve.png" alt="Precision Curve" width="600"/>
-
-- `BoxPR_curve.png`  
-<img src="src/process/content/runs/detect/train3/BoxPR_curve.png" alt="PR Curve" width="600"/>
-
-- `BoxR_curve.png`  
-<img src="src/process/content/runs/detect/train3/BoxR_curve.png" alt="Recall Curve" width="600"/>
-
----
-
-### 4. 📊 Confusion Matrix
-
-- `confusion_matrix_normalized.png`  
-<img src="src/process/content/runs/detect/train3/confusion_matrix_normalized.png" alt="Confusion Matrix Normalized" width="600"/>
-
-- `confusion_matrix.png`  
-<img src="src/process/content/runs/detect/train3/confusion_matrix.png" alt="Confusion Matrix" width="600"/>
-
----
-
-### 5. Sample Labels and Predictions
-
-- `train_batch*.jpg`: Training images
-- `val_batch*_labels.jpg`: Ground truth
-- `val_batch*_pred.jpg`: Predictions
-
-### 6. Model Weights
-
-- `weights/best.pt`: Best model
-- `weights/last.pt`: Final model
-
----
-
-## 🔁 Model Reuse
-
-```bash
-yolo task=detect mode=predict model=weights/best.pt source=path/to/images
 ```
 
 ---
