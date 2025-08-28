@@ -56,9 +56,34 @@ class FasterRCNNTrainer:
 
         return total_loss / len(data_loader)
 
+    # @torch.no_grad()
+    # def evaluate(self, data_loader, epoch):
+    #     self.model.eval()
+    #     total_loss = 0.0
+    #     loop = tqdm(data_loader, desc=f"Epoch [{epoch}] Val", leave=True)
+
+    #     for images, targets in loop:
+    #         images = [img.to(self.device) for img in images]
+    #         targets = [{k: v.to(self.device) for k, v in t.items()} for t in targets]
+
+    #         loss_dict = self.model(images, targets)
+    #         losses = sum(loss for loss in loss_dict.values())
+    #         total_loss += losses.item()
+    #         loop.set_postfix(val_loss=losses.item())
+
+    #     return total_loss / len(data_loader)
+    # @torch.no_grad()
+    # def evaluate(self, data_loader, epoch):
+    #     self.model.eval()
+    #     results = []
+    #     for images, _ in data_loader:
+    #         images = [img.to(self.device) for img in images]
+    #         outputs = self.model(images)   # list prediction
+    #         results.extend(outputs)
+    #     return results  
     @torch.no_grad()
     def evaluate(self, data_loader, epoch):
-        self.model.eval()
+        self.model.train()   # 👈 bắt buộc để trả về loss_dict
         total_loss = 0.0
         loop = tqdm(data_loader, desc=f"Epoch [{epoch}] Val", leave=True)
 
@@ -72,6 +97,7 @@ class FasterRCNNTrainer:
             loop.set_postfix(val_loss=losses.item())
 
         return total_loss / len(data_loader)
+        
 
     def fit(self, train_loader, val_loader=None, num_epochs=10):
         for epoch in range(1, num_epochs + 1):
