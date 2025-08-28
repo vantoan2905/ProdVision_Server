@@ -60,8 +60,15 @@ cd ProdVision_Ui
 git clone https://github.com/your-username/ProdVision_django.git
 cd ProdVision_django
 ```
+### 2. Training model
+```bash
+cd ProdVision_django/provision/ai_model
+python main.py --numclass 2 --mode train --model faster_rcnn --dataset coco --device cuda
 
-### 2. Set up the `.env` file:
+
+```
+
+### 3. Set up the `.env` file:
 ```env
 POSTGRES_DB=your_db
 POSTGRES_USER=your_user
@@ -73,7 +80,7 @@ DATABASE_URL=postgres://your_user:your_password@localhost:5432/your_db
 SECRET_KEY=your_secret_key
 ```
 
-### 3. Install dependencies and run migrations:
+### 4. Install dependencies and run migrations:
 ```bash
 python -m venv venv
 venv\Scripts\activate      # On Windows
@@ -84,14 +91,14 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-### 4. Run the server locally:
+### 5. Run the server locally:
 ```bash
 python manage.py runserver
 uvicorn app_django.asgi:application --reload
 
 ```
 
-### 5. Run with Docker:
+### 6. Run with Docker:
 ```bash
 docker-compose up --build
 # To stop:
