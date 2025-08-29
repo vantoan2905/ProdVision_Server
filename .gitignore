@@ -25,6 +25,8 @@ PCB_DATASET_yolo_version/
 yolo-V8-main/
 staticfiles/
 /PCB_DATASET_yolo_version.zip
+/run.zip
+best_model.pth
 
 
 # Installer logs
