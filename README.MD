@@ -1,55 +1,64 @@
-# Introduction project:
-# ProdVision Django Project
-## 📋 Project Introduction
+# ProdVision Django Project  
 
-ProdVision is a PCB defect detection system using YOLOv8, built with Django. The project supports model training, evaluation, and provides an API for PCB image defect detection.
+## 📋 Introduction  
 
-![image.png](/image.png)
+**ProdVision** is a PCB defect detection system built with **Django** and **YOLOv8**.  
+The system supports model **training, evaluation**, and provides an **API** for PCB image defect detection.  
 
-# Model
+![image.png](/image.png)  
 
-## 1. Model Name and Type
+---
+
+## 🤖 Model  
+
+### 1. Dataset  
+- Example training with custom data from:  
+  [Tiny-Defect-Detection-for-PCB](https://github.com/Ixiaohuihuihui/Tiny-Defect-Detection-for-PCB)  
+
+### 2. Training Result (10 epochs)  
+![Training Loss Curve](content/run/run1/loss_curve.png)  
+
+### 3. Model Name and Type  
 - **Faster R-CNN + U-Net**  
-- A combination of object detection (Faster R-CNN)   
+- Combines object detection (Faster R-CNN) with segmentation (U-Net).  
 
-## 2. Architecture Overview
-- **Backbone**: extracts features from the input image.  
-- **Region Proposal Network (RPN)**: generates candidate regions that may contain objects.  
-- **Detection Head**: performs classification and bounding box regression.  
-- **U-Net**: provides detailed segmentation, enhancing detection quality.  
+### 4. Architecture Overview  
+- **Backbone**: extracts image features.  
+- **Region Proposal Network (RPN)**: generates candidate object regions.  
+- **Detection Head**: classification + bounding box regression.  
+- **U-Net**: segmentation for fine-grained detection.  
 
-## 3. Working Mechanism
-- Pipeline: `Input video from camera → Feature Extraction → Region Proposals → Classification + Regression → Segmentation (U-Net)`  
-- Bounding boxes are predicted using an **anchor-based** approach.  
+### 5. Working Mechanism  
+`Input Image/Video → Feature Extraction → Region Proposals → Detection Head → Segmentation (U-Net)`  
 
-## 4. Advantages
+Bounding boxes are predicted using **anchor-based** approach.  
+
+### 6. Advantages  
 - High accuracy (AP, mAP, F1-score).  
-- Capable of handling multiple objects and different object sizes.  
-- Supports fine-grained segmentation through U-Net.  
+- Handles multiple objects, different sizes.  
+- Supports segmentation for small PCB defects.  
 
-## 5. Limitations
+### 7. Limitations  
 - Requires significant computational resources (GPU/CPU).  
-- Accuracy decreases for very small or heavily occluded objects.  
+- Decreased accuracy for very small or heavily occluded defects.  
 
-## 6. Reason for Selection
-- Well-suited for the dataset in this project (many small objects, real-time environment, limited hardware).  
-- Compared to other models, Faster R-CNN + U-Net provides a strong balance between **accuracy** and **scalability**.  
+### 8. Reason for Selection  
+- Well-suited for PCB dataset (many small objects).  
+- Balances **accuracy** and **scalability**.  
 
-## 7. Training Information
-- **Dataset**: used for training/finetuning.  
-- **Loss functions**: GIoU Loss, Focal Loss,…  
+### 9. Training Information  
+- **Dataset**: YOLO-format PCB dataset.  
+- **Loss functions**: GIoU Loss, Focal Loss.  
 - **Optimizers**: SGD, Adam, AdamW.  
-- **Hyperparameters**: batch size, learning rate,…  
+- **Hyperparameters**: batch size, learning rate.  
 
-
-
-
+---
 
 
 ## 🚀 Getting Started
 
 ### 1. Clone sever project and client Ui:
-- Client project:
+- Client (UI)::
 ```bash
 git clone https://github.com/vantoan2905/ProdVision_Ui.git
 cd ProdVision_Ui
@@ -60,6 +69,8 @@ cd ProdVision_Ui
 git clone https://github.com/your-username/ProdVision_django.git
 cd ProdVision_django
 ```
+
+
 ### 2. Training model
 ```bash
 cd ProdVision_django/provision/ai_model
