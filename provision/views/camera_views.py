@@ -38,27 +38,21 @@ class CameraRequestView(APIView):
 class CameraWebSocketView(AsyncWebsocketConsumer):
     permission_classes = [IsAuthenticated]
     async def connect(self):
-        # Lấy camera_id từ URL route
         self.camera_id = self.scope['url_route']['kwargs']['camera_id']
 
-        # Nhận kết nối
         await self.accept()
 
-        # Bắt đầu gửi video frames (chạy song song, không chặn consumer)
         self.stream_task = asyncio.create_task(self.stream_video())
 
     async def disconnect(self, close_code):
-        # Khi client ngắt kết nối thì dừng stream
         if hasattr(self, "stream_task"):
             self.stream_task.cancel()
 
     async def receive(self, text_data=None, bytes_data=None):
-        # Nếu client gửi message thì xử lý ở đây (tạm bỏ trống)
         pass
 
     async def stream_video(self):
         """Stream video frames từ OpenCV qua WebSocket"""
-        # Mở camera hoặc video file theo camera_id
         video_path = f"media/videos/{self.camera_id}.mp4"
         cap = cv2.VideoCapture(video_path)
 
@@ -68,20 +62,14 @@ class CameraWebSocketView(AsyncWebsocketConsumer):
                 if not ret:
                     break
 
-                # Resize cho nhẹ (tùy chọn)
                 frame = cv2.resize(frame, (640, 480))
 
-                # Encode frame sang JPEG
                 _, buffer = cv2.imencode('.jpg', frame)
                 frame_bytes = buffer.tobytes()
 
-                # Base64 encode để gửi qua WebSocket
                 frame_b64 = base64.b64encode(frame_bytes).decode('utf-8')
 
-                # Gửi qua WebSocket
                 await self.send(text_data=frame_b64)
-
-                # Sleep để tránh overload (ví dụ 30 fps ~ 0.03s)
                 await asyncio.sleep(0.03)
         finally:
             cap.release()
