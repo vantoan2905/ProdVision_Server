@@ -1,5 +1,5 @@
 from django.urls import path
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+# from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 # from provision.views.camera_views import CameraRequestView, GetAllCamerasView,  ObjectDetectorView
 from provision.views.camera_views import CameraRequestView, LoadAllCamerasView
 urlpatterns = [
@@ -7,4 +7,5 @@ urlpatterns = [
 
     path('request_camera/', CameraRequestView.as_view(), name='request_camera'),
     # path('detect_object/', ObjectDetectorView.as_view(), name='detect_object'),
+
 ]
