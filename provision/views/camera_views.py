@@ -1,153 +1,180 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
-from drf_yasg.utils import swagger_auto_schema
 from channels.generic.websocket import AsyncWebsocketConsumer
+import json
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status, serializers
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
-import cv2
-import base64
-import asyncio
+from provision.serializers.camera import CameraSerializer, ErrorSerializer
 
-from provision.serializers.respon.camera_respon_forms import CameraResponseFrom
-from provision.serializers.request.camera_request_froms import (
-    CameraRequestFrom, LoadAllCamerasRequestFrom,
-    UpdateCameraRequestFrom, CreateCameraRequestFrom
-)
-from provision.services.camera.camera_service import CameraService
-
-
-# ===============================
-# CAMERA API VIEWS
-# ===============================
 
 class CameraRequestView(APIView):
-    """API for getting a specific camera by ID"""
-    permission_classes = [IsAuthenticated]
-
     @swagger_auto_schema(
-        operation_description="Get a specific camera by ID",
-        query_serializer=CameraRequestFrom,
-        responses={200: CameraResponseFrom}
-    )
-    def get(self, request):
-        serializer = CameraRequestFrom(data=request.query_params)
-        serializer.is_valid(raise_exception=True)
-        camera_id = serializer.validated_data["camera_id"]
-
-        camera = CameraService.get_camera_by_id(camera_id)
-        response_serializer = CameraResponseFrom(camera)
-        return Response(response_serializer.data, status=status.HTTP_200_OK)
-
-
-class CreateCameraView(APIView):
-    """API for creating a new camera"""
-    permission_classes = [IsAuthenticated]
-
-    @swagger_auto_schema(
-        operation_description="Create a new camera",
-        request_body=CreateCameraRequestFrom,
-        responses={201: CameraResponseFrom}
+        operation_description="Create a new camera request",
+        responses={201: "Camera request created"},
+        tags=["Camera Requests"]
     )
     def post(self, request):
-        serializer = CreateCameraRequestFrom(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        camera_name = serializer.validated_data["camera_name"]
-        camera_key = serializer.validated_data["camera_key"]
-        camera_info = serializer.validated_data["camera_info"]
-
-        camera = CameraService.add_new_camera(
-            request.user.id, camera_name, camera_key, camera_info
-        )
-        response_serializer = CameraResponseFrom(camera)
-        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
-
-
-class UpdateCameraView(APIView):
-    """API for updating an existing camera"""
-    permission_classes = [IsAuthenticated]
-
-    @swagger_auto_schema(
-        operation_description="Update a camera",
-        request_body=UpdateCameraRequestFrom,
-        responses={200: CameraResponseFrom}
-    )
-    def post(self, request):
-        serializer = UpdateCameraRequestFrom(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        camera_id = serializer.validated_data["camera_id"]
-        camera_name = serializer.validated_data["camera_name"]
-        camera_key = serializer.validated_data["camera_key"]
-        camera_info = serializer.validated_data["camera_info"]
-
-        camera = CameraService.update_camera(camera_id, camera_name, camera_key, camera_info)
-        response_serializer = CameraResponseFrom(camera)
-        return Response(response_serializer.data, status=status.HTTP_200_OK)
+        return Response({"message": "Camera request created"}, status=status.HTTP_201_CREATED)
 
 
 class LoadAllCamerasView(APIView):
-    """API for loading all cameras of the authenticated user"""
-    permission_classes = [IsAuthenticated]
-
     @swagger_auto_schema(
-        operation_description="Get all cameras for the authenticated user",
-        responses={200: CameraResponseFrom(many=True)}
+        operation_description="Get a list of all cameras",
+        responses={200: CameraSerializer(many=True)},
+        tags=["Camera Requests"]
     )
-    def get(self, request, version=None, *args, **kwargs):
-        user = request.user
-        list_cameras = CameraService.get_all_cameras(user.id)
+    def get(self, request):
+        return Response({"cameras": []}, status=status.HTTP_200_OK)
 
-        if not list_cameras:
-            return Response(
-                {"message": "User has no cameras"},
-                status=status.HTTP_404_NOT_FOUND
+
+class CameraDetailView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get detailed information of a camera",
+        responses={200: CameraSerializer()},
+        tags=["Camera Requests"]
+    )
+    def get(self, request, pk):
+        return Response({"id": pk, "name": "Production Line Camera"}, status=status.HTTP_200_OK)
+
+
+class CameraStartView(APIView):
+    @swagger_auto_schema(
+        operation_description="Start camera stream",
+        responses={200: CameraSerializer()},
+        tags=["Camera Requests"]
+    )
+    def post(self, request, pk):
+        return Response({"id": pk, "status": "started"}, status=status.HTTP_200_OK)
+
+
+class CameraStopView(APIView):
+    @swagger_auto_schema(
+        operation_description="Stop camera stream",
+        responses={200: CameraSerializer()},
+        tags=["Camera Requests"]
+    )
+    def post(self, request, pk):
+        return Response({"id": pk, "status": "stopped"}, status=status.HTTP_200_OK)
+
+
+class CameraSnapshotView(APIView):
+    @swagger_auto_schema(
+        operation_description="Capture a frame from the camera",
+        responses={200: CameraSerializer()},
+        tags=["Camera Requests"]
+    )
+    def post(self, request, pk):
+        return Response({"id": pk, "snapshot_url": f"/media/cameras/{pk}/snapshot.jpg"}, status=status.HTTP_200_OK)
+
+
+# ========================
+# Error APIs
+# ========================
+
+class CameraErrorsView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get a list of errors from the camera",
+        responses={200: ErrorSerializer(many=True)},
+        tags=["Camera Errors"]
+    )
+    def get(self, request, pk):
+        errors = [
+            {"id": 1, "level": "HIGH", "type": "Surface Defect"},
+            {"id": 2, "level": "MEDIUM", "type": "Color Variation"},
+        ]
+        return Response({"camera_id": pk, "errors": errors}, status=status.HTTP_200_OK)
+
+
+class ErrorDetailView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get error details",
+        responses={200: ErrorSerializer()},
+        tags=["Camera Errors"]
+    )
+    def get(self, request, pk):
+        return Response({"id": pk, "type": "Surface Defect", "level": "HIGH"}, status=status.HTTP_200_OK)
+
+
+class ErrorAcknowledgeView(APIView):
+    @swagger_auto_schema(
+        operation_description="Mark error as acknowledged",
+        responses={200: ErrorSerializer()},
+        tags=["Camera Errors"]
+    )
+    def post(self, request, pk):
+        return Response({"id": pk, "acknowledged": True}, status=status.HTTP_200_OK)
+
+
+class CapturedImagesView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get a list of error images from the camera",
+        responses={200: openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "camera_id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                "captured_images": openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING)),
+            }
+        )},
+        tags=["Camera Errors"]
+    )
+    def get(self, request, pk):
+        return Response({"camera_id": pk, "captured_images": ["/media/errors/1.jpg", "/media/errors/2.jpg"]}, status=status.HTTP_200_OK)
+
+
+class ErrorStatisticsView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get error statistics by date",
+        responses={200: openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            additional_properties=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    "HIGH": openapi.Schema(type=openapi.TYPE_INTEGER),
+                    "MEDIUM": openapi.Schema(type=openapi.TYPE_INTEGER),
+                    "LOW": openapi.Schema(type=openapi.TYPE_INTEGER),
+                }
             )
+        )},
+        tags=["Camera Errors"]
+    )
+    def get(self, request):
+        stats = {
+            "2025-08-30": {"HIGH": 5, "MEDIUM": 3, "LOW": 7},
+            "2025-08-31": {"HIGH": 2, "MEDIUM": 1, "LOW": 4},
+        }
+        return Response({"statistics": stats}, status=status.HTTP_200_OK)
+    
 
-        response_serializer = CameraResponseFrom(list_cameras, many=True)
-        return Response(response_serializer.data, status=status.HTTP_200_OK)
 
-
-# ===============================
-# CAMERA WEBSOCKET VIEW
-# ===============================
+# ========================
+# WebSocket Consumer
+# ========================
 
 class CameraWebSocketView(AsyncWebsocketConsumer):
-    """WebSocket for streaming video frames from a camera"""
-    permission_classes = [IsAuthenticated]
-
     async def connect(self):
-        self.camera_id = self.scope["url_route"]["kwargs"]["camera_id"]
+        self.camera_id = self.scope['url_route']['kwargs']['camera_id']
         await self.accept()
-        self.stream_task = asyncio.create_task(self.stream_video())
+        # TODO: Authenticate user if needed
+        await self.send(text_data=json.dumps({
+            "message": f"Connected to camera {self.camera_id}"
+        }))
 
     async def disconnect(self, close_code):
-        if hasattr(self, "stream_task"):
-            self.stream_task.cancel()
-
-    async def receive(self, text_data=None, bytes_data=None):
-        # You can handle incoming messages if needed
+        # TODO: Cleanup if needed
         pass
 
-    async def stream_video(self):
-        """Stream video frames from OpenCV to WebSocket"""
-        video_path = f"media/videos/{self.camera_id}.mp4"
-        cap = cv2.VideoCapture(video_path)
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        action = data.get("action")
 
-        try:
-            while cap.isOpened():
-                ret, frame = cap.read()
-                if not ret:
-                    break
-
-                frame = cv2.resize(frame, (640, 480))
-
-                _, buffer = cv2.imencode(".jpg", frame)
-                frame_bytes = buffer.tobytes()
-                frame_b64 = base64.b64encode(frame_bytes).decode("utf-8")
-
-                await self.send(text_data=frame_b64)
-                await asyncio.sleep(0.03)  # ~30 FPS
-        finally:
-            cap.release()
+        if action == "start":
+            await self.send(text_data=json.dumps({"status": "streaming started"}))
+        elif action == "stop":
+            await self.send(text_data=json.dumps({"status": "streaming stopped"}))
+        else:
+            await self.send(text_data=json.dumps({"error": "unknown action"}))
