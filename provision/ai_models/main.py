@@ -7,7 +7,7 @@ import yaml
 from torch.utils.data import DataLoader
 
 from faster_R_CNN.model import FasterRCNNTrainer
-from data_loader.load_yolo_data import LoadYoloData
+from provision.ai_models.data_loader.object_detection.load_data import LoadYoloData
 #  TODO: if update new model import here
 
 

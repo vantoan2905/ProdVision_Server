@@ -8,6 +8,23 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import seaborn as sns
 import json
+class FastRCNNPredictorWithDropout(nn.Module):
+    def __init__(self, in_channels, num_classes, dropout=0.5):
+        super().__init__()
+        self.cls_score = nn.Sequential(
+            nn.Linear(in_channels, in_channels),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(in_channels, num_classes),
+        )
+        self.bbox_pred = nn.Linear(in_channels, num_classes * 4)
+
+    def forward(self, x):
+        if x.dim() == 4:  # (N, C, 1, 1) -> (N, C)
+            x = torch.flatten(x, start_dim=1)
+        scores = self.cls_score(x)
+        bbox_deltas = self.bbox_pred(x)
+        return scores, bbox_deltas
 
 class FasterRCNNTrainer:
     def __init__(self, num_classes, device="cuda", run_name="run1", patience=5):
@@ -33,17 +50,23 @@ class FasterRCNNTrainer:
         self.patience = patience
         self.counter = 0
 
+    # def build_model(self, num_classes):
+    #     model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights="DEFAULT")
+    #     in_features = model.roi_heads.box_predictor.cls_score.in_features
+
+    #     # thêm Dropout trước fully connected
+    #     model.roi_heads.box_predictor = nn.Sequential(
+    #         nn.Linear(in_features, in_features),
+    #         nn.ReLU(),
+    #         nn.Dropout(0.5),
+    #         nn.Linear(in_features, num_classes),
+    #     )
+    #     return model
+
     def build_model(self, num_classes):
         model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights="DEFAULT")
         in_features = model.roi_heads.box_predictor.cls_score.in_features
-
-        # thêm Dropout trước fully connected
-        model.roi_heads.box_predictor = nn.Sequential(
-            nn.Linear(in_features, in_features),
-            nn.ReLU(),
-            nn.Dropout(0.5),
-            nn.Linear(in_features, num_classes),
-        )
+        model.roi_heads.box_predictor = FastRCNNPredictorWithDropout(in_features, num_classes, dropout=0.5)
         return model
 
     def train_one_epoch(self, data_loader, epoch):
@@ -108,9 +131,9 @@ class FasterRCNNTrainer:
 
             self.lr_scheduler.step()
 
-        self.plot_losses()
+        self.plot_history()
 
-    def plot_losses(self):
+    def plot_history(self):
         plt.figure(figsize=(8, 6))
         sns.set_style("whitegrid")
         plt.plot(self.history["train"], label="Train Loss")
