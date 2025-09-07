@@ -1,0 +1,16 @@
+# Virtual env
+.venv/
+
+# Dataset & data folder
+data/
+PCB_DATASET_yolo_version/
+yolo-V8-main/
+PCB_DATASET_yolo_version.zip
+run.zip
+best_model.pth
+
+# Django collected static files
+staticfiles/
+
+# Docker compose file (không cần copy vào image)
+docker-compose.yml
