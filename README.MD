@@ -5,8 +5,19 @@
 **ProdVision** is a PCB defect detection system built with **Django** and **YOLOv8**.  
 The system supports model **training, evaluation**, and provides an **API** for PCB image defect detection.  
 
-![image.png](/image.png)  
 
+### Main view:
+
+
+![image.png](/image.png)  
+---
+
+
+### Architecture:
+
+
+
+![alt text](architecture.png)
 ---
 
 ## 🤖 Model  
@@ -19,17 +30,16 @@ The system supports model **training, evaluation**, and provides an **API** for 
 ![Training Loss Curve](content/run/run1/loss_curve.png)  
 
 ### 3. Model Name and Type  
-- **Faster R-CNN + U-Net**  
-- Combines object detection (Faster R-CNN) with segmentation (U-Net).  
+- **Faster R-CNN**  
+- Combines object detection (Faster R-CNN).  
 
 ### 4. Architecture Overview  
 - **Backbone**: extracts image features.  
 - **Region Proposal Network (RPN)**: generates candidate object regions.  
 - **Detection Head**: classification + bounding box regression.  
-- **U-Net**: segmentation for fine-grained detection.  
 
 ### 5. Working Mechanism  
-`Input Image/Video → Feature Extraction → Region Proposals → Detection Head → Segmentation (U-Net)`  
+`Input Image/Video → Feature Extraction → Region Proposals → Detection Head`  
 
 Bounding boxes are predicted using **anchor-based** approach.  
 
