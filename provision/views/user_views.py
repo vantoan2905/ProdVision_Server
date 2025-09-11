@@ -11,8 +11,8 @@ from provision.serializers.user import (
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
-
+from provision.utils.mail_manager import MailFormation, MailManager
+from provision.utils.token_manager import OTPManager
 # 1. Register a new user
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -22,7 +22,8 @@ class RegisterView(generics.CreateAPIView):
     @swagger_auto_schema(
         operation_summary="Register new account",
         operation_description="Create a new user account",
-        tags=["Authentication"]
+        tags=["Authentication"],
+        request_body=RegisterSerializer
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
@@ -56,7 +57,9 @@ class LogoutView(APIView):
 class MeView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    @swagger_auto_schema(operation_summary="Get user profile", tags=["User"])
+    @swagger_auto_schema(operation_summary="Get user profile",
+                          tags=["User"],
+                          responses={200: UserSerializer()})
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
@@ -101,6 +104,7 @@ class ChangePasswordView(APIView):
 
 
 # 5. Reset password request + confirm
+
 class ResetPasswordRequestView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -109,12 +113,27 @@ class ResetPasswordRequestView(APIView):
         tags=["Authentication"],
         request_body=ResetPasswordSerializer
     )
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
+        version = kwargs.get("version")
         serializer = ResetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        # TODO: send reset email
-        return Response({"msg": "Password reset email sent"})
 
+        print("email", serializer.validated_data["email"])
+        user = User.objects.get(email=serializer.validated_data["email"])
+        code = OTPManager.generate_otp()
+        subject, message, from_email, recipient_list = MailFormation.code_reset_password(
+            user, code
+        )
+        MailManager.send_mail(subject, message, from_email, recipient_list)
+
+        return Response(
+            {
+                "message": "Reset password email sent successfully",
+                "version": version,
+                "email": user.email,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 class ResetPasswordConfirmView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -127,7 +146,14 @@ class ResetPasswordConfirmView(APIView):
     def post(self, request):
         serializer = ResetPasswordConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        # TODO: verify token and update password
+        token = serializer.validated_data["token"]
+        if not OTPManager.verify_otp(token, serializer.validated_data["otp"]):
+            return Response({"error": "Invalid or expired OTP"}, status=status.HTTP_400_BAD_REQUEST)
+        new_password = serializer.validated_data["new_password"]
+        user = User.objects.get(id=token)  # Giả sử token là user_id
+        user.set_password(new_password)
+        user.save()
+        OTPManager.otp_store.pop(token, None)  
         return Response({"msg": "Password has been reset"})
 
 

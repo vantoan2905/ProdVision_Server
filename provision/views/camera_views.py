@@ -166,6 +166,11 @@ class CameraWebSocketView(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # TODO: Cleanup if needed
+        """
+        Called when the socket is closed. This is the last message we will
+        receive from the client, and we should clean up any resources we've
+        allocated at this point.
+        """
         pass
 
     async def receive(self, text_data):
