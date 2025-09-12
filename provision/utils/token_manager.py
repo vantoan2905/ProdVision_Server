@@ -20,9 +20,9 @@ class OTPManager:
             return False
         stored_otp, expire_time = OTPManager.otp_store[user_id]
         if time.time() > expire_time:
-            del OTPManager.otp_store[user_id]  # OTP hết hạn
+            del OTPManager.otp_store[user_id] 
             return False
         if stored_otp == otp:
-            del OTPManager.otp_store[user_id]  # Xác thực xong xóa luôn
+            del OTPManager.otp_store[user_id]  
             return True
         return False
