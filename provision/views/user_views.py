@@ -143,18 +143,29 @@ class ResetPasswordConfirmView(APIView):
         tags=["Authentication"],
         request_body=ResetPasswordConfirmSerializer
     )
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
+        version = kwargs.get("version")
+        
         serializer = ResetPasswordConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        token = serializer.validated_data["token"]
-        if not OTPManager.verify_otp(token, serializer.validated_data["otp"]):
+
+        user_id = serializer.validated_data["token"]  # token chính là user_id
+        otp = serializer.validated_data["otp"]
+
+        if not OTPManager.verify_otp(user_id, otp):
             return Response({"error": "Invalid or expired OTP"}, status=status.HTTP_400_BAD_REQUEST)
+
         new_password = serializer.validated_data["new_password"]
-        user = User.objects.get(id=token)  # Giả sử token là user_id
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
         user.set_password(new_password)
         user.save()
-        OTPManager.otp_store.pop(token, None)  
+
         return Response({"msg": "Password has been reset"})
+
 
 
 # 6. Email & OTP verification
