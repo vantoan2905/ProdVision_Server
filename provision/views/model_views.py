@@ -7,7 +7,8 @@ from drf_yasg.utils import swagger_auto_schema
 
 class ModelManagerViews(APIView):
 
-    @swagger_auto_schema(responses={200: "OK"})
+    @swagger_auto_schema(responses={200: "OK"},
+                         tags=['Model Management'])
     def get(self, request):
         """Health check service"""
         return Response({"message": "OK"}, status=status.HTTP_200_OK)
@@ -15,7 +16,8 @@ class ModelManagerViews(APIView):
 
 class HealthModelCheckView(APIView):
 
-    @swagger_auto_schema(responses={200: "OK"})
+    @swagger_auto_schema(responses={200: "OK"},
+                         tags=['Model Management'])
     def get(self, request):
         # TODO: health check model
         return Response({"message": "Model OK"}, status=status.HTTP_200_OK)
@@ -23,7 +25,8 @@ class HealthModelCheckView(APIView):
 
 class TrainModelView(APIView):
 
-    @swagger_auto_schema(responses={200: "Training started"})
+    @swagger_auto_schema(responses={200: "Training started"},
+                         tags=['Model Management'])
     def post(self, request):
         # TODO: train model
         return Response({"message": "Training started"}, status=status.HTTP_200_OK)
@@ -31,7 +34,8 @@ class TrainModelView(APIView):
 
 class EvaluateModelView(APIView):
 
-    @swagger_auto_schema(responses={200: "Evaluation complete"})
+    @swagger_auto_schema(responses={200: "Evaluation complete"},
+                         tags=['Model Management'])
     def post(self, request):
         # TODO: evaluate model
         return Response({"message": "Evaluation complete"}, status=status.HTTP_200_OK)
@@ -39,7 +43,8 @@ class EvaluateModelView(APIView):
 
 class SaveModelView(APIView):
 
-    @swagger_auto_schema(responses={200: "Model saved"})
+    @swagger_auto_schema(responses={200: "Model saved"},
+                         tags=['Model Management'])
     def post(self, request):
         # TODO: save model
         return Response({"message": "Model saved"}, status=status.HTTP_200_OK)
@@ -47,7 +52,8 @@ class SaveModelView(APIView):
 
 class SaveResultsView(APIView):
 
-    @swagger_auto_schema(responses={200: "Results saved"})
+    @swagger_auto_schema(responses={200: "Results saved"},
+                         tags=['Model Management'])
     def post(self, request):
         # TODO: save results
         return Response({"message": "Results saved"}, status=status.HTTP_200_OK)

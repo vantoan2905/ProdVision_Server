@@ -1,9 +1,8 @@
 # ProdVision Django Project  
 
 ## 📋 Introduction  
-
-**ProdVision** is a PCB defect detection system built with **Django** and **YOLOv8**.  
-The system supports model **training, evaluation**, and provides an **API** for PCB image defect detection.  
+**ProdVision** is a **PCB defect detection system** built with **Django** and **Computer Vision models (Faster R-CNN)**.  
+The system supports **training, evaluation, and real-time defect detection** via a Django **REST API** and web-based UI.  
 
 
 ### Main view:
@@ -20,47 +19,48 @@ The system supports model **training, evaluation**, and provides an **API** for 
 ![alt text](architecture.png)
 ---
 
+## 🚀 Features  
+- Upload PCB images for **real-time defect detection**.  
+- **REST API** for integration with external systems.  
+- Model training and evaluation pipeline with **custom datasets**.  
+- **Docker support** for easy deployment.  
+- Frontend built with **Shadcn UI** for responsive design.  
+
+---
+
 ## 🤖 Model  
 
-### 1. Dataset  
-- Example training with custom data from:  
-  [Tiny-Defect-Detection-for-PCB](https://github.com/Ixiaohuihuihui/Tiny-Defect-Detection-for-PCB)  
+### Dataset  
+- Example training with: [Tiny-Defect-Detection-for-PCB](https://github.com/Ixiaohuihuihui/Tiny-Defect-Detection-for-PCB)  
+- Supports **YOLO-format datasets**.  
 
-### 2. Training Result (10 epochs)  
-![Training Loss Curve](content/run/run1/loss_curve.png)  
+### Architecture  
+- **Faster R-CNN** for object detection.   
+- Pipeline: `Input → Feature Extraction → RPN → Detection Head`.  
 
-### 3. Model Name and Type  
-- **Faster R-CNN**  
-- Combines object detection (Faster R-CNN).  
-
-### 4. Architecture Overview  
-- **Backbone**: extracts image features.  
-- **Region Proposal Network (RPN)**: generates candidate object regions.  
-- **Detection Head**: classification + bounding box regression.  
-
-### 5. Working Mechanism  
-`Input Image/Video → Feature Extraction → Region Proposals → Detection Head`  
-
-Bounding boxes are predicted using **anchor-based** approach.  
-
-### 6. Advantages  
-- High accuracy (AP, mAP, F1-score).  
-- Handles multiple objects, different sizes.  
-- Supports segmentation for small PCB defects.  
-
-### 7. Limitations  
-- Requires significant computational resources (GPU/CPU).  
-- Decreased accuracy for very small or heavily occluded defects.  
-
-### 8. Reason for Selection  
-- Well-suited for PCB dataset (many small objects).  
-- Balances **accuracy** and **scalability**.  
-
-### 9. Training Information  
-- **Dataset**: YOLO-format PCB dataset.  
-- **Loss functions**: GIoU Loss, Focal Loss.  
+### Training Info  
+- **Loss functions**: GIoU, Focal Loss.  
 - **Optimizers**: SGD, Adam, AdamW.  
-- **Hyperparameters**: batch size, learning rate.  
+- **Hardware**: Trained on NVIDIA RTX 3050 (4GB).  
+- Achieved **85% mAP** after optimization.  
+
+
+### Advantages  
+- High accuracy on small PCB defects.  
+- Handles multiple object sizes.  
+
+### Limitations  
+- Requires GPU for efficient training.  
+- Decreased accuracy on heavily occluded defects.  
+
+---
+
+## 🛠 Tech Stack  
+- **Backend**: Python, Django, REST Framework  
+- **Computer Vision**: PyTorch, Faster R-CNN, YOLOv8  
+- **Frontend**: Shadcn UI, HTML/CSS, JavaScript  
+- **Database**: PostgreSQL (via `.env` config)  
+- **Deployment**: Docker, Docker Compose  
 
 ### 9. Dowload model pretrainz`:
 - **Model**: 
@@ -68,22 +68,32 @@ Bounding boxes are predicted using **anchor-based** approach.
 
 ---
 
-
-
-
-## 🚀 Getting Started
-
-### 1. Clone sever project and client Ui:
-- Client (UI)::
+## 📂 Project Structure  
 ```bash
+ProdVision_Django/
+├── provision/ai_model   # Training scripts (Faster R-CNN, YOLOv8)
+├── webapp/              # Django backend (API, views, serializers)
+├── frontend/            # Shadcn UI frontend
+├── dataset/             # PCB dataset (YOLO format)
+├── docker-compose.yml
+└── README.md
+```  
+
+---
+
+## ⚙️ Getting Started  
+
+
+### 1. Clone repositories  
+```bash
+# UI client
 git clone https://github.com/vantoan2905/ProdVision_Ui.git
 cd ProdVision_Ui
 
-```
-- Sever project:
-```bash
-git clone https://github.com/your-username/ProdVision_django.git
+# Django server
+git clone https://github.com/vantoan2905/ProdVision_django.git
 cd ProdVision_django
+```  
 ```
 
 - Open WSL2 (Ubuntu) and install NVIDIA Container Toolkit:
@@ -153,15 +163,14 @@ docker run --rm --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi
 
 
 
-### 2. Training model
+
+### 2. Train model  
 ```bash
-cd ProdVision_django/provision/ai_model
+cd provision/ai_model
 python main.py --numclass 2 --mode train --model faster_rcnn --dataset coco --device cuda
+```  
 
-
-```
-
-### 3. Set up the `.env` file:
+### 3. Setup `.env` file  
 ```env
 POSTGRES_DB=your_db
 POSTGRES_USER=your_user
@@ -171,44 +180,52 @@ POSTGRES_PORT=5432
 
 DATABASE_URL=postgres://your_user:your_password@localhost:5432/your_db
 SECRET_KEY=your_secret_key
-```
+```  
 
-### 4. Install dependencies and run migrations:
+### 4. Install dependencies & run migrations  
 ```bash
 python -m venv venv
-venv\Scripts\activate      # On Windows
-# source venv/bin/activate # On Linux/Mac
+venv\Scripts\activate      # Windows
+# source venv/bin/activate # Linux/Mac
 
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py createsuperuser
-```
+```  
 
-### 5. Run the server locally:
+### 5. Run the server  
 ```bash
 python manage.py runserver
-uvicorn app_django.asgi:application --reload
-
 ```
 
-### 6. Run with Docker:
+### 6. Run with Docker  
 ```bash
 docker-compose up --build
-# To stop:
+# Stop
 docker-compose down
-```
+```  
 
 ---
 
-## 📝 Notes
-
-- Training data follows YOLO format.
-- Evaluation based on the validation set in `data.yaml`.
-- Detailed epoch results in `results.csv`.
+## 📊 Results  
+- **Training curve**:  
+  ![Training Loss Curve](content/run/run1/loss_curve.png)  
+- **Detection performance**: 85% mAP.  
+- Logs & metrics in `results.csv`.  
 
 ---
 
-## 📄 License
+## 📸 Demo  
+- Updating!  
 
-This project is licensed under the MIT
+---
 
+## 📌 Future Improvements  
+- Add **MySQL/MongoDB integration** for storing detection history.  
+- Enhance **real-time video streaming** with WebRTC.  
+- Cloud deployment with **Docker + AWS/GCP**.  
+
+---
+
+## 📄 License  
+MIT License  
