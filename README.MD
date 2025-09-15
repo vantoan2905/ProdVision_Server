@@ -4,8 +4,19 @@
 **ProdVision** is a **PCB defect detection system** built with **Django** and **Computer Vision models (Faster R-CNN)**.  
 The system supports **training, evaluation, and real-time defect detection** via a Django **REST API** and web-based UI.  
 
-![image.png](/image.png)  
 
+### Main view:
+
+
+![image.png](/image.png)  
+---
+
+
+### Architecture:
+
+
+
+![alt text](architecture.png)
 ---
 
 ## 🚀 Features  
@@ -33,6 +44,7 @@ The system supports **training, evaluation, and real-time defect detection** via
 - **Hardware**: Trained on NVIDIA RTX 3050 (4GB).  
 - Achieved **85% mAP** after optimization.  
 
+
 ### Advantages  
 - High accuracy on small PCB defects.  
 - Handles multiple object sizes.  
@@ -49,6 +61,10 @@ The system supports **training, evaluation, and real-time defect detection** via
 - **Frontend**: Shadcn UI, HTML/CSS, JavaScript  
 - **Database**: PostgreSQL (via `.env` config)  
 - **Deployment**: Docker, Docker Compose  
+
+### 9. Dowload model pretrainz`:
+- **Model**: 
+
 
 ---
 
@@ -67,6 +83,7 @@ ProdVision_Django/
 
 ## ⚙️ Getting Started  
 
+
 ### 1. Clone repositories  
 ```bash
 # UI client
@@ -77,6 +94,75 @@ cd ProdVision_Ui
 git clone https://github.com/vantoan2905/ProdVision_django.git
 cd ProdVision_django
 ```  
+```
+
+- Open WSL2 (Ubuntu) and install NVIDIA Container Toolkit:
+```bash
+sudo apt-get update
+sudo apt-get install -y curl gnupg2 ca-certificates lsb-release
+
+```
+- Add  key and repo:
+```bash
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | \
+  sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit.gpg
+
+curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+  sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit.gpg] https://#g' | \
+  sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+```
+- Istall tollkit:
+```bash
+sudo apt-get update
+sudo apt-get install -y nvidia-container-toolkit
+```
+- Docker runtime:
+```bash
+sudo nvidia-ctk runtime configure --runtime=docker
+```
+- Check GPU in Container:
+```bash
+docker run --rm --gpus all nvidia/cuda:12.6.2-base-ubuntu22.04 nvidia-smi
+```
+
+
+```bash
+docker compose build
+
+docker compose up -d
+```
+
+
+- Build docker image and run:
+
+```bash
+docker build -t prodvision_django . --no-cache
+docker run --rm -it --gpus all -p 8000:8000 prodvision_django
+
+
+```
+
+
+
+
+
+
+
+<!-- -  Install NVIDIA Container Toolkit:
+```bash
+sudo apt-get update
+sudo apt-get install -y nvidia-container-toolkit
+sudo systemctl restart docker
+```
+- Check NVIDIA Container Toolkit:
+```bash
+docker run --rm --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi
+``` -->
+
+
+
+
 
 ### 2. Train model  
 ```bash

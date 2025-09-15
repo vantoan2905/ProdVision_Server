@@ -1,20 +1,25 @@
-# Dockerfile
-FROM python:3.10
+FROM nvidia/cuda:12.6.2-cudnn-runtime-ubuntu22.04
 
-# Set work directory
-WORKDIR /app
+# Set env
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# Copy requirements first for caching
+RUN apt-get update && apt-get install -y \
+    python3 python3-pip python3-venv libpq-dev gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /ProdVision_django
+
 COPY requirements.txt .
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Copy source code
-COPY ./src ./src
+RUN pip3 install --no-cache-dir \
+    torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
 
-# Set working directory to src
-WORKDIR /app/src
+COPY . .
 
-# Command to run FastAPI
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+RUN python3 manage.py collectstatic --noinput || true
+
+CMD ["uvicorn", "app_django.asgi:application", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+
