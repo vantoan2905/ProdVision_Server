@@ -15,6 +15,7 @@ urlpatterns = [
     path(f"{base_url}/create/", CreateModelView.as_view(), name="create_model"),
     path(f"{base_url}/update/<int:pk>/", UpdateModelView.as_view(), name="update_model"),
     path(f"{base_url}/delete/<int:pk>/", DeleteModelView.as_view(), name="delete_model"),
+    path(f"{base_url}/get_model/<int:pk>/", CreateModelView.as_view(), name="get_model"),
 
 ]
 
