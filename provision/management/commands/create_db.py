@@ -6,7 +6,9 @@ from psycopg2 import sql
 import subprocess
 
 class Command(BaseCommand):
-    help = "Tạo database nếu chưa tồn tại, migrate và tạo superuser mặc định"
+    help = "Create database and run migrations if database does not exist" \
+    "\nUsage run command: python manage.py create_db" 
+
 
     def handle(self, *args, **kwargs):
         db_name = settings.DATABASES['default']['NAME']
