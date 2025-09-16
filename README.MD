@@ -16,7 +16,7 @@ The system supports **training, evaluation, and real-time defect detection** via
 
 
 
-![alt text](architecture.png)
+<!-- ![alt text](architecture.png) -->
 ---
 
 ## 🚀 Features  

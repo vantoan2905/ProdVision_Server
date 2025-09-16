@@ -12,6 +12,16 @@ from drf_yasg import openapi
 from provision.serializers.camera import CameraSerializer, ErrorSerializer
 
 
+class CreateCameraView(APIView):
+    @swagger_auto_schema(
+        operation_description="Create a new camera",
+        responses={201: "Camera created"},
+        tags=["Camera Requests"]
+    )
+    def post(self, request):
+        return Response({"message": "Camera created"}, status=status.HTTP_201_CREATED)
+
+
 class CameraRequestView(APIView):
     @swagger_auto_schema(
         operation_description="Create a new camera request",

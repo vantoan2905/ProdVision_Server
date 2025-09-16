@@ -1,18 +1,21 @@
 from django.urls import path
 from provision.views.model_views import (
-    ModelManagerViews,
-    HealthModelCheckView,
-    TrainModelView,
-    EvaluateModelView,
-    SaveModelView,
-    SaveResultsView
+    LoadAllModelsView,
+    HealthCheckView,
+    CreateModelView,
+    UpdateModelView,
+    DeleteModelView
+    
 )
-
+base_url = 'model_management'
 urlpatterns = [
-    path('health_check/', ModelManagerViews.as_view(), name='health_check'),
-    path('health_model_check/', HealthModelCheckView.as_view(), name='health_model_check'),
-    path('train_model/', TrainModelView.as_view(), name='train_model'),
-    path('evaluate_model/', EvaluateModelView.as_view(), name='evaluate_model'),
-    path('save_model/', SaveModelView.as_view(), name='save_model'),
-    path('save_results/', SaveResultsView.as_view(), name='save_results'),
+    # CRUD for model
+    path(f"{base_url}/load_all_models/", LoadAllModelsView.as_view(), name="load_all_models"),
+    path(f"{base_url}/health_check/", HealthCheckView.as_view(), name="health_check"),
+    path(f"{base_url}/create/", CreateModelView.as_view(), name="create_model"),
+    path(f"{base_url}/update/<int:pk>/", UpdateModelView.as_view(), name="update_model"),
+    path(f"{base_url}/delete/<int:pk>/", DeleteModelView.as_view(), name="delete_model"),
+
 ]
+
+
