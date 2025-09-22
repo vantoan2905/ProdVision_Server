@@ -35,11 +35,13 @@ urlpatterns = [
     path("api/<version>/product/", include("provision.urls.products_urls")),
     path("api/<version>/employee/", include("provision.urls.employees_urls")),
     path("api/<version>/task_report/", include("provision.urls.task_report_urls")),
-    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    # path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    # path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("accounts/", include("allauth.urls")),
     path("docs/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+    path("chatbot/", include("provision.urls.chatbot_urls")),
+
     re_path(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
 ]
 if settings.DEBUG:

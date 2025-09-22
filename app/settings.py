@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     # REST & Swagger
     "rest_framework",
     "rest_framework_simplejwt",
-    "drf_yasg",
+    "drf_yasg"
 ]
 
 SITE_ID = 1
@@ -71,7 +71,7 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
-ROOT_URLCONF = "app_django.urls"
+ROOT_URLCONF = "app.urls"
 
 # ------------------------
 # Templates
@@ -122,7 +122,7 @@ SWAGGER_SETTINGS = {
 # ------------------------
 # WSGI
 # ------------------------
-WSGI_APPLICATION = "app_django.wsgi.application"
+WSGI_APPLICATION = "app.wsgi.application"
 
 # ------------------------
 # Database
@@ -182,3 +182,10 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
+
+
+
+# -----------------------
+# custom AUTH model
+# -----------------------
+AUTH_USER_MODEL = "provision.User"
