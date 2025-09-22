@@ -7,6 +7,11 @@
 
 **ProdVision** is a **defect detection system** built with **Django** and **Computer Vision models** such as **Faster R-CNN, YOLOv8**, and **UNet (for medical image analysis)**.  
 It provides a complete pipeline for **training, evaluation, and real-time defect detection** via a **Django REST API** and a **web-based UI**.  
+---
+![alt text](main.png)
+
+
+
 
 ---
 
@@ -83,8 +88,8 @@ git clone https://github.com/vantoan2905/ProdVision_Ui.git
 cd ProdVision_Ui
 
 # Django server
-git clone https://github.com/vantoan2905/ProdVision_django.git
-cd ProdVision_django
+git clone https://github.com/vantoan2905/ProdVision_Server.git
+cd ProdVision_Server
 ```
 
 ### 2. Setup environment

@@ -4,15 +4,24 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from provision.serializers.user import (
-    RegisterSerializer, UserSerializer, ChangePasswordSerializer,
-    ResetPasswordSerializer, ResetPasswordConfirmSerializer,
-    SetRoleSerializer
+    RegisterSerializer, 
+    UserSerializer, 
+    ChangePasswordSerializer,
+    ResetPasswordSerializer, 
+    ResetPasswordConfirmSerializer,
+    SetRoleSerializer, 
+    LoginSerializer, 
+    RefreshTokenSerializer
 )
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from provision.utils.mail_manager import MailFormation, MailManager
 from provision.utils.token_manager import OTPManager
+
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 # 1. Register a new user
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -27,7 +36,6 @@ class RegisterView(generics.CreateAPIView):
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
-
 
 # 2. Logout (invalidate token)
 class LogoutView(APIView):
@@ -134,6 +142,42 @@ class ResetPasswordRequestView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+# 6. Login
+class LoginView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    @swagger_auto_schema(
+        operation_summary="Login",
+        tags=["Authentication"],
+        request_body=LoginSerializer
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+    
+
+
+
+
+
+
+# 7. Refresh token
+class RefreshTokenView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    @swagger_auto_schema(
+        operation_summary="Refresh token",
+        tags=["Authentication"],
+        request_body=RefreshTokenSerializer
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+
+
+
+
+
 
 class ResetPasswordConfirmView(APIView):
     permission_classes = [permissions.AllowAny]

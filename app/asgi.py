@@ -10,7 +10,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app_django.settings")
 
 django_asgi_app = get_asgi_application()
 
-from app_django.jwt_middleware.jwt_middleware import JwtAuthMiddleware
+from app.jwt_middleware.jwt_middleware import JwtAuthMiddleware
 from provision.urls import camera_routing  
 
 application = ProtocolTypeRouter({

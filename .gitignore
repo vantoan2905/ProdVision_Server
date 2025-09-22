@@ -30,6 +30,7 @@ best_model.pth
 run.*
 test_video.*
 /output.mp4
+/content/
 
 
 # Installer logs

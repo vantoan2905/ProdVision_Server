@@ -1,0 +1,15 @@
+# <type>(<scope>): <short summary>
+# │       │          │
+# │       │          └─> Short summary of the change (max 72 chars)
+# │       └─> Scope: module, service, file, etc.
+# └─> Type: feat | fix | docs | style | refactor | perf | test | chore
+
+# Body (optional):
+# - Explain the motivation for the change
+# - Highlight what was done
+# - Note any potential side effects
+
+# Footer (optional):
+# - BREAKING CHANGE: description of breaking changes
+# - Closes: #issue_number
+# - Related: #issue_number
