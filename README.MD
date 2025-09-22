@@ -37,7 +37,7 @@ It provides a complete pipeline for **training, evaluation, and real-time defect
 ### Training Info  
 - **Loss functions**: GIoU, Focal Loss  
 - **Optimizers**: SGD, Adam, AdamW  
-- **Hardware**: NVIDIA RTX 3050 (4GB)  
+- **Hardware**: NVIDIA RTX 3050 (4GB)  README.rstREADME.rst
 - Achieved **85% mAP** after optimization.  
 
 ### Advantages  
