@@ -160,8 +160,3 @@ See [Model Training Guide](provision/ai_models/README.md).
 * Logs, checkpoints, and results are stored in `checkpoints/` and `media/`.
 
 ```
-
----
-
-Bạn có muốn mình viết luôn file `provision/ai_models/README.md` mẫu (hướng dẫn train từng model cụ thể) để khi bấm link là dùng được luôn không?
-```
