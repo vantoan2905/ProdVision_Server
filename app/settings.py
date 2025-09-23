@@ -17,6 +17,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 # Installed apps
 # ------------------------
 INSTALLED_APPS = [
+    "corsheaders",
     "provision",
 
     "django.contrib.admin",
@@ -35,10 +36,12 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.facebook",
 
     # REST & Swagger
-    "rest_framework",
-    "rest_framework_simplejwt",
+    'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     "drf_yasg"
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 SITE_ID = 1
 
@@ -60,6 +63,7 @@ REST_FRAMEWORK = {
 # Middleware
 # ------------------------
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -189,3 +193,6 @@ ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
 # custom AUTH model
 # -----------------------
 AUTH_USER_MODEL = "provision.User"
+
+
+

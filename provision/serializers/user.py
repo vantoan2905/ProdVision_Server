@@ -2,6 +2,10 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import get_user_model
+from rest_framework.validators import UniqueValidator
+User = get_user_model()
+
+
 class RefreshTokenSerializer(serializers.Serializer):
     refresh = serializers.CharField()
 
@@ -14,10 +18,11 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField()
     class Meta:
         fields = ("username", "password")
-
-
-User = get_user_model()
 class RegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
     password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -27,12 +32,11 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User(
             username=validated_data["username"],
-            email=validated_data.get("email", "")
+            email=validated_data["email"]
         )
         user.set_password(validated_data["password"])
         user.save()
         return user
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -58,8 +62,9 @@ class ResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
 class ResetPasswordConfirmSerializer(serializers.Serializer):
-    token = serializers.CharField()
-    new_password = serializers.CharField(validators=[validate_password])
+    email = serializers.EmailField()
+    otp = serializers.CharField()
+    new_password = serializers.CharField()
 
 class SetRoleSerializer(serializers.Serializer):
     role = serializers.ChoiceField(choices=["user", "staff", "admin"])
