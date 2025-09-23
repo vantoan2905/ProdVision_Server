@@ -1,12 +1,14 @@
 from django.db import models
+from .status_type import CameraStatus, CameraType
 
-class CameraInfo(models.Model):
-    model_name = models.CharField(max_length=255, null=True, blank=True)
-    resolution_max = models.CharField(max_length=50, null=True, blank=True)
-    resolution_min = models.CharField(max_length=50, null=True, blank=True)
-    fps_max = models.IntegerField(null=True, blank=True)
-    fps_min = models.IntegerField(null=True, blank=True)
-    size = models.CharField(max_length=100, null=True, blank=True)
+class Camera(models.Model):
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=100)
+    ip_address = models.GenericIPAddressField()
+    type = models.ForeignKey(CameraType, on_delete=models.SET_NULL, null=True, related_name='cameras')
+    status = models.ForeignKey(CameraStatus, on_delete=models.SET_NULL, null=True, related_name='cameras')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.model_name or f"Camera {self.id}"
+        return self.name
