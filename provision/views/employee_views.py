@@ -1,63 +1,49 @@
-from rest_framework.views import APIView
+from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 
-
-class EmployeeView(APIView):
+class EmployeeViewSet(viewsets.ViewSet):
     @swagger_auto_schema(
+        operation_summary="List all employees",
         operation_description="Get a list of all employees",
         responses={200: "Employee list"},
         tags=["Employee Requests"]
     )
-    def get(self, request):
+    def list(self, request):
         return Response({"employees": []}, status=status.HTTP_200_OK)
-    
 
-class EmployeeCreateView(APIView):
     @swagger_auto_schema(
+        operation_summary="Create a new employee",
         operation_description="Create a new employee",
         responses={201: "Employee created"},
         tags=["Employee Requests"]
     )
-    def post(self, request):
+    def create(self, request):
         return Response({"message": "Employee created"}, status=status.HTTP_201_CREATED)
-    
-class EmployeeListView(APIView):
-    @swagger_auto_schema(
-        operation_description="Get a list of all employees",
-        responses={200: "Employee list"},
-        tags=["Employee Requests"]
-    )
-    def get(self, request):
-        return Response({"employees": []}, status=status.HTTP_200_OK)
-    
 
-class EmployeeDetailView(APIView):
     @swagger_auto_schema(
+        operation_summary="Retrieve employee details",
         operation_description="Get detailed information of an employee",
         responses={200: "Employee details"},
         tags=["Employee Requests"]
     )
-    def get(self, request, pk):
+    def retrieve(self, request, pk=None):
         return Response({"id": pk, "name": "Production Line Employee"}, status=status.HTTP_200_OK)
-    
 
-class EmployeeUpdateView(APIView):
     @swagger_auto_schema(
+        operation_summary="Update an employee",
         operation_description="Update an employee",
         responses={200: "Employee updated"},
         tags=["Employee Requests"]
     )
-    def put(self, request, pk):
+    def update(self, request, pk=None):
         return Response({"message": "Employee updated"}, status=status.HTTP_200_OK)
-    
 
-class EmployeeDeleteView(APIView):
     @swagger_auto_schema(
+        operation_summary="Delete an employee",
         operation_description="Delete an employee",
         responses={200: "Employee deleted"},
         tags=["Employee Requests"]
     )
-    def delete(self, request, pk):
+    def destroy(self, request, pk=None):
         return Response({"message": "Employee deleted"}, status=status.HTTP_200_OK)

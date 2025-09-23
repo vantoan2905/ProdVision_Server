@@ -31,6 +31,8 @@ run.*
 test_video.*
 /output.mp4
 /content/
+/staticfiles/
+/static/
 
 
 # Installer logs

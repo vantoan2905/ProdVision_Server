@@ -1,38 +1,16 @@
 import requests
+import numpy as np
+from typing import List
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from sentence_transformers import SentenceTransformer
 
+
+# -----------------------------
+# LLM Services
+# -----------------------------
 class ModelLLMService_API:
     def __init__(self, model_name, api_key, api_url, api_version=None, api_type=None,
                  max_tokens=512, temperature=0.7, top_p=1.0, n=1, stream=False, stop=None):
-        """
-        Initialize ModelLLMService_API.
-
-        Parameters
-        ----------
-        model_name : str
-            Name of the pre-trained model.
-        api_key : str
-            API key for accessing the model.
-        api_url : str
-            URL of the API endpoint.
-        api_version : str, optional
-            Version of the API.
-        api_type : str, optional
-            Type of the API.
-        max_tokens : int, optional
-            Maximum number of tokens to generate.
-        temperature : float, optional
-            Temperature for generating tokens.
-        top_p : float, optional
-            Top p value for generating tokens.
-        n : int, optional
-            Number of generated tokens.
-        stream : bool, optional
-            Whether to stream the generated tokens.
-        stop : str or list of str, optional
-            Tokens to stop generating at.
-        """
-
         self.model_name = model_name
         self.api_key = api_key
         self.api_url = api_url
@@ -45,7 +23,7 @@ class ModelLLMService_API:
         self.stream = stream
         self.stop = stop
 
-    def generate_response(self, prompt):
+    def generate_response(self, prompt: str):
         headers = {"Authorization": f"Bearer {self.api_key}"}
         payload = {
             "model": self.model_name,
@@ -63,36 +41,7 @@ class ModelLLMService_API:
 
 class ModelLLMService_Local:
     def __init__(self, model_name, model_version=None,
-                 max_tokens=512, temperature=0.7, top_p=1.0, n=1, stream=False, stop=None):
-        """
-        Initialize ModelLLMService_Local.
-
-        Parameters
-        ----------
-        model_name : str
-            Name of the pre-trained model.
-        model_version : str, optional
-            Version of the pre-trained model.
-        max_tokens : int, optional
-            Maximum number of tokens to generate.
-        temperature : float, optional
-            Temperature for generating tokens.
-        top_p : float, optional
-            Top p value for generating tokens.
-        n : int, optional
-            Number of generated tokens.
-        stream : bool, optional
-            Whether to stream the generated tokens.
-        stop : str or list of str, optional
-            Tokens to stop generating at.
-
-        Attributes
-        ----------
-        tokenizer : transformers.AutoTokenizer
-            Tokenizer for the pre-trained model.
-        model : transformers.AutoModelForCausalLM
-            Pre-trained model for causal language modeling.
-        """
+                 max_tokens=128, temperature=0.7, top_p=1.0, n=1, stream=False, stop=None):
         self.model_name = model_name
         self.model_version = model_version
         self.max_tokens = max_tokens
@@ -105,7 +54,7 @@ class ModelLLMService_Local:
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForCausalLM.from_pretrained(model_name)
 
-    def generate_response(self, prompt):
+    def generate_response(self, prompt: str):
         inputs = self.tokenizer(prompt, return_tensors="pt")
         outputs = self.model.generate(
             **inputs,
@@ -115,3 +64,54 @@ class ModelLLMService_Local:
             num_return_sequences=self.n
         )
         return self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+
+# -----------------------------
+# RAG Components
+# -----------------------------
+class DocumentStorage:
+    def __init__(self):
+        self.documents = []
+        self.embeddings = []
+
+    def add_documents(self, docs: List[str], embedder):
+        for doc in docs:
+            emb = embedder.encode(doc)
+            self.documents.append(doc)
+            self.embeddings.append(emb)
+
+    def get_all(self):
+        return self.documents, self.embeddings
+
+
+class DocumentRetrieval:
+    def __init__(self, storage: DocumentStorage):
+        self.storage = storage
+
+    def retrieve(self, query: str, embedder, top_k=3):
+        docs, embs = self.storage.get_all()
+        q_emb = embedder.encode(query)
+        scores = [np.dot(q_emb, e) / (np.linalg.norm(q_emb) * np.linalg.norm(e)) for e in embs]
+        ranked = sorted(zip(docs, scores), key=lambda x: x[1], reverse=True)
+        return [doc for doc, _ in ranked[:top_k]]
+
+
+class Generation:
+    def __init__(self, llm_service):
+        self.llm_service = llm_service
+
+    def generate(self, prompt: str):
+        return self.llm_service.generate_response(prompt)
+
+
+class Orchestration:
+    def __init__(self, retriever: DocumentRetrieval, generator: Generation):
+        self.retriever = retriever
+        self.generator = generator
+
+    def ask(self, query: str, embedder):
+        context_docs = self.retriever.retrieve(query, embedder)
+        context = "\n".join(context_docs)
+        final_prompt = f"Answer the question based on the context:\n{context}\n\nQuestion: {query}\nAnswer:"
+        return self.generator.generate(final_prompt)
+

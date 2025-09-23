@@ -1,28 +1,25 @@
+import redis
 import random
-import time
+
+r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 class OTPManager:
-    # Lưu OTP trong RAM: {user_id: (otp_code, expire_time)}
-    otp_store = {}
-
     @staticmethod
     def generate_otp(user_id, length=6, expire_seconds=300):
-        """Tạo OTP cho từng user riêng biệt"""
-        otp = random.randint(10**(length-1), 10**length - 1)
-        expire_time = time.time() + expire_seconds
-        OTPManager.otp_store[user_id] = (otp, expire_time)
+        otp = random.randint(10**(length-1), 10**length-1)
+        try:
+            r.setex(f"otp:{user_id}", expire_seconds, otp)  
+        except Exception as e:
+            print(e)
         return otp
 
     @staticmethod
     def verify_otp(user_id, otp):
-        """Xác thực OTP theo user"""
-        if user_id not in OTPManager.otp_store:
+        key = f"otp:{user_id}"
+        stored_otp = r.get(key)
+        if not stored_otp:
             return False
-        stored_otp, expire_time = OTPManager.otp_store[user_id]
-        if time.time() > expire_time:
-            del OTPManager.otp_store[user_id] 
-            return False
-        if stored_otp == otp:
-            del OTPManager.otp_store[user_id]  
+        if str(stored_otp.decode()) == str(otp):
+            r.delete(key)
             return True
         return False
