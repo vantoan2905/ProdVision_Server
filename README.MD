@@ -119,6 +119,8 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
+
+
 ### 4. PostgreSQL Installation
 
 See [PostgreSQL Setup Guide](docs/POSTGRESQL_SETUP.md).
@@ -134,7 +136,10 @@ python manage.py create_db
 ```bash
 python manage.py runserver
 ```
-
+- Show Swagger view:
+```bash
+http://localhost:8000/docs
+```
 ### 6. Run with Docker
 
 ```bash
@@ -159,9 +164,4 @@ See [Model Training Guide](provision/ai_models/README.md).
 * Ensure you have **GPU + NVIDIA Container Toolkit** installed if you want GPU acceleration inside Docker.
 * Logs, checkpoints, and results are stored in `checkpoints/` and `media/`.
 
-```
-
----
-
-Bạn có muốn mình viết luôn file `provision/ai_models/README.md` mẫu (hướng dẫn train từng model cụ thể) để khi bấm link là dùng được luôn không?
 ```
