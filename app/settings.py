@@ -1,8 +1,11 @@
-
 from pathlib import Path
 import os
 import dotenv
+from mongoengine import connect
 
+# ------------------------
+# Base setup
+# ------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 dotenv.load_dotenv()
 
@@ -10,7 +13,7 @@ dotenv.load_dotenv()
 # Basic settings
 # ------------------------
 SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-default")
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = os.getenv("DEBUG", "True") == "True"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
 # ------------------------
@@ -18,8 +21,16 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 # ------------------------
 INSTALLED_APPS = [
     "corsheaders",
-    "provision",
 
+    # Custom apps
+    "task",
+    "vision",
+    "product",
+    "chatbot",
+    "camera",
+    "employee",
+
+    # Django core
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -36,14 +47,13 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.facebook",
 
     # REST & Swagger
-    'rest_framework',
-    'rest_framework_simplejwt.token_blacklist',
-    "drf_yasg"
+    "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
+    "drf_yasg",
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
-
 SITE_ID = 1
+CORS_ORIGIN_ALLOW_ALL = True
 
 # ------------------------
 # REST Framework settings
@@ -52,7 +62,6 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-    "EXCEPTION_HANDLER": "provision.utils.custom_exception_handler.custom_exception_handler",
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
     "DEFAULT_VERSION": "v1",
     "ALLOWED_VERSIONS": ["v1", "v2"],
@@ -63,8 +72,9 @@ REST_FRAMEWORK = {
 # Middleware
 # ------------------------
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # ⚡ Nên để ngay sau SecurityMiddleware
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -72,7 +82,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = "app.urls"
@@ -112,15 +121,11 @@ LOGIN_REDIRECT_URL = "/swagger/"
 SWAGGER_SETTINGS = {
     "USE_SESSION_AUTH": False,
     "SECURITY_DEFINITIONS": {
-        "Bearer": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header",
-        }
+        "Bearer": {"type": "apiKey", "name": "Authorization", "in": "header"},
     },
     "DEFAULT_MODEL_RENDERING": "example",
     "PERSIST_AUTH": True,
-    "USE_STATIC_URLS": False,  # 👉 buộc dùng CDN thay vì static local
+    "USE_STATIC_URLS": True,  # ✅ Cho phép dùng static local
 }
 
 # ------------------------
@@ -129,15 +134,15 @@ SWAGGER_SETTINGS = {
 WSGI_APPLICATION = "app.wsgi.application"
 
 # ------------------------
-# Database
+# Database (PostgreSQL)
 # ------------------------
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB"),
-        "USER": os.getenv("POSTGRES_USER"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-        "HOST": os.getenv("POSTGRES_HOST", "db"),
+        "NAME": os.getenv("POSTGRES_DB", "task_manager"),
+        "USER": os.getenv("POSTGRES_USER", "postgres"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "postgres"),
+        "HOST": os.getenv("POSTGRES_HOST", "localhost"),
         "PORT": os.getenv("POSTGRES_PORT", "5432"),
     }
 }
@@ -156,7 +161,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # ------------------------
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Ho_Chi_Minh"
 USE_I18N = True
 USE_TZ = True
 
@@ -164,8 +169,9 @@ USE_TZ = True
 # Static & Media
 # ------------------------
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"       # For collectstatic (production)
-STATICFILES_DIRS = [BASE_DIR / "static"]     # For custom static in development
+STATIC_ROOT = BASE_DIR / "staticfiles"        # Dùng khi chạy collectstatic
+STATICFILES_DIRS = [BASE_DIR / "static"]      # Dùng trong dev
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -187,12 +193,10 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
 
-
-
-# -----------------------
-# custom AUTH model
-# -----------------------
-AUTH_USER_MODEL = "provision.User"
-
-
-
+# ------------------------
+# MongoDB Connection
+# ------------------------
+connect(
+    db="vantoan",
+    host="mongodb://localhost:27017/vantoan"
+)
