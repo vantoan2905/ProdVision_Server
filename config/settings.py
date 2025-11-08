@@ -23,12 +23,12 @@ INSTALLED_APPS = [
     "corsheaders",
 
     # Custom apps
-    "task",
-    "vision",
-    "product",
-    "chatbot",
-    "camera",
-    "employee",
+    # "apps.task",
+    # "apps.vision",
+    # "apps.product",
+    "apps.chatbot",
+    # "apps.camera",
+    # "apps.employee",
 
     # Django core
     "django.contrib.admin",
@@ -67,6 +67,19 @@ REST_FRAMEWORK = {
     "ALLOWED_VERSIONS": ["v1", "v2"],
     "VERSION_PARAM": "version",
 }
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,  
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+
 
 # ------------------------
 # Middleware
@@ -84,7 +97,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
 ]
 
-ROOT_URLCONF = "app.urls"
+ROOT_URLCONF = "config.urls"
 
 # ------------------------
 # Templates
@@ -131,7 +144,7 @@ SWAGGER_SETTINGS = {
 # ------------------------
 # WSGI
 # ------------------------
-WSGI_APPLICATION = "app.wsgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 # ------------------------
 # Database (PostgreSQL)
@@ -196,7 +209,12 @@ ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
 # ------------------------
 # MongoDB Connection
 # ------------------------
+from mongoengine import connect
+
 connect(
-    db="vantoan",
-    host="mongodb://localhost:27017/vantoan"
+    db="prod_chatbot",
+    host="mongodb://localhost:27017/prod_chatbot"
 )
+from mongoengine import get_connection
+print("[DEBUG] MONGO CONNECT =", get_connection())
+
