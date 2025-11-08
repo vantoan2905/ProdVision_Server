@@ -21,3 +21,12 @@ psycopg2-binary
 requests
 uvicorn
 whitenoise
+
+
+# openai
+langchain-openai
+langchain 
+langchain-community 
+langchain-core 
+langchainhub
+langchain-ollama

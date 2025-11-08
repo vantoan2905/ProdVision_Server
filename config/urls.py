@@ -41,11 +41,11 @@ urlpatterns = [
 
     # --- App routes (chưa có file urls.py nên comment lại) ---
     # path("api/v1/employee/", include("app.employee.urls")),  # ⚙️ uncomment khi có file app/employee/urls.py
-    # path("api/v1/task/", include("app.task.urls")),          # ⚙️ uncomment khi có file app/task/urls.py
-    # path("api/v1/product/", include("app.product.urls")),    # ⚙️ uncomment khi có file app/product/urls.py
-    # path("api/v1/chatbot/", include("app.chatbot.urls")),    # ⚙️ uncomment khi có file app/chatbot/urls.py
-    # path("api/v1/model/", include("app.model.urls")),        # ⚙️ uncomment khi có file app/model/urls.py
-    
+    # path("api/v1/task/", include("apps.task.urls")),          # ⚙️ uncomment khi có file apps/task/urls.py
+    # path("api/v1/product/", include("apps.product.urls")),    # ⚙️ uncomment khi có file apps/product/urls.py
+    path("api/v1/chatbot/", include("apps.chatbot.urls.chatbot_urls")),    # ⚙️ uncomment khi có file apps/chatbot/urls.py
+    # path("api/v1/model/", include("apps.model.urls")),        # ⚙️ uncomment khi có file apps/model/urls.py
+
     # --- JWT Auth ---
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
