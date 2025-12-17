@@ -32,33 +32,26 @@ schema_view = get_schema_view(
 def home(request):
     return HttpResponse("✅ Welcome to ProdVision Server")
 
-# ======================================
-# 🔹 URL Patterns
-# ======================================
+
+
 urlpatterns = [
     path("", home, name="home"),
     path("admin/", admin.site.urls),
 
-    # --- App routes (chưa có file urls.py nên comment lại) ---
-    # path("api/v1/employee/", include("app.employee.urls")),  # ⚙️ uncomment khi có file app/employee/urls.py
-    # path("api/v1/task/", include("apps.task.urls")),          # ⚙️ uncomment khi có file apps/task/urls.py
-    # path("api/v1/product/", include("apps.product.urls")),    # ⚙️ uncomment khi có file apps/product/urls.py
-    path("api/v1/chatbot/", include("apps.chatbot.urls.chatbot_urls")),    # ⚙️ uncomment khi có file apps/chatbot/urls.py
-    # path("api/v1/model/", include("apps.model.urls")),        # ⚙️ uncomment khi có file apps/model/urls.py
+    path("api/v1/auth/", include("auth_app.urls")),
+    path("api/v1/files/", include("files.urls")),
+    path("api/v1/chats/", include("chats.urls")),
 
-    # --- JWT Auth ---
-    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 
-    # --- Swagger / Redoc ---
+#     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+#     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+
     path("docs/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
     re_path(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
 ]
 
-# ======================================
-# 🔹 Static & Media (for DEBUG mode)
-# ======================================
+
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

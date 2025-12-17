@@ -30,3 +30,6 @@ langchain-community
 langchain-core 
 langchainhub
 langchain-ollama
+
+
+#
