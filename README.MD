@@ -1,167 +1,285 @@
 
----
 
-# Introduction  
+# 🧠 ProdVision – Personal Multimodal AI Assistant
 
-# ProdVision Django Project  
+ProdVision is a **personal AI assistant project** designed to support **text-based and image-based interactions**.
+The system allows users to upload images, extracts text using **OCR**, and passes the extracted content to a **Large Language Model (LLM)** for reasoning and response generation.
 
-**ProdVision** is a **defect detection system** built with **Django** and **Computer Vision models** such as **Faster R-CNN, YOLOv8**, and **UNet (for medical image analysis)**.  
-It provides a complete pipeline for **training, evaluation, and real-time defect detection** via a **Django REST API** and a **web-based UI**.  
----
-![alt text](main.png)
-
-
-
+This project is built **for personal learning and productivity**, focusing on **AI model integration, system design, and real-time interaction**, rather than large-scale production.
 
 ---
+## 🔗 Related Repositories
 
-## Features  
-- Upload PCB images for **real-time defect detection**.  
-- **REST API** for integration with external systems.  
-- Model training and evaluation pipeline with **custom datasets**.  
-- **Docker support** for easy deployment.  
-- Frontend built with **Shadcn UI** for responsive design.  
+- Backend (this repo): https://github.com/vantoan2905/ProdVision_Server
+- Frontend (UI): https://github.com/vantoan2905/ProdVision_UI
 
 ---
 
-## Model  
+## ✨ Key Features
 
-### Dataset  
-- Example dataset: [Tiny-Defect-Detection-for-PCB](https://github.com/Ixiaohuihuihui/Tiny-Defect-Detection-for-PCB)  
-- Supports **YOLO-format datasets**.  
+* 📷 **Image Upload & OCR**
+  Extracts text from user-uploaded images using pretrained OCR models.
 
-### Architecture  
-- **Faster R-CNN** as main detection model.  
-- Pipeline: `Input → Feature Extraction → RPN → Detection Head`.  
+* 🧠 **LLM Integration (Tool Calling)**
+  OCR results are provided as structured input to the LLM for downstream reasoning.
 
-### Training Info  
-- **Loss functions**: GIoU, Focal Loss  
-- **Optimizers**: SGD, Adam, AdamW  
-- **Hardware**: NVIDIA RTX 3050 (4GB)  README.rstREADME.rst
-- Achieved **85% mAP** after optimization.  
+* ⚡ **Real-time Chat via Server-Sent Events (SSE)**
+  Streams incremental LLM responses to the client in real time.
 
-### Advantages  
-- High accuracy on small PCB defects.  
-- Handles multiple object sizes.  
+* 🔐 **User & Conversation Management**
+  Supports multiple users, conversations, and message history.
 
-### Limitations  
-- Requires GPU for efficient training.  
-- Decreased accuracy on heavily occluded defects.  
+* 🐳 **Dockerized Deployment**
+  Easy local setup and consistent runtime environment.
 
 ---
 
-## Tech Stack  
-- **Backend**: Python, Django, Django REST Framework  
-- **Computer Vision**: PyTorch, Faster R-CNN, YOLOv8, UNet  
-- **Frontend**: Shadcn UI, HTML/CSS, JavaScript  
-- **Database**: PostgreSQL (via `.env` config)  
-- **Deployment**: Docker, Docker Compose  
+## 🏗️ System Architecture
+
+```text
+Client
+  ├── Upload image / send message
+  ↓
+Backend (Django)
+  ├── OCR inference (image → text)
+  ├── Tool calling → LLM
+  ├── Conversation & context management
+  └── SSE streaming response
+  ↓
+Client (real-time updates)
+```
 
 ---
 
-## Project Structure  
-```bash
-ProdVision_Django/
-├── app_django/          # Django project settings & configs
-├── provision/           # Core app (AI models, services, APIs)
-│   ├── ai_models/       # Training scripts (Faster R-CNN, YOLOv8, UNet)
-│   ├── management/      # Custom management commands
-│   ├── models/          # Database models
-│   ├── serializers/     # DRF serializers
-│   └── views/           # API views
-├── media/               # Uploaded files (images, videos)
-├── static/              # Static assets
-├── docker-compose.yml
+## 🛠️ Tech Stack
+
+* **Backend:** Django, Django REST Framework
+* **AI / Data Processing:** OCR (pretrained models), OpenCV, NumPy
+* **LLM Integration:** Tool-calling workflow
+* **Database:** PostgreSQL / SQLite (for local use)
+* **Realtime Communication:** Server-Sent Events (SSE)
+* **Deployment:** Docker
+
+---
+
+## 📂 Project Structure
+
+```text
+ProdVision_Server/
+│   ├── users/           # User management
+│   ├── config/          # main application
+│   ├── chat/            # Conversations & messages
+│   ├── files/            # OCR inference pipeline
+│   ├── llm/             # LLM integration & tool calls
+│   └── core/            # Shared utilities
+├── media/               # Uploaded images
 ├── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
 └── README.md
-````
+```
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
-### 1. Clone repositories
+### 1️⃣ Clone the repository
 
 ```bash
-# UI client
-git clone https://github.com/vantoan2905/ProdVision_Ui.git
-cd ProdVision_Ui
-
-# Django server
 git clone https://github.com/vantoan2905/ProdVision_Server.git
 cd ProdVision_Server
 ```
 
-### 2. Setup environment
 
-Create `.env` file:
+---
+
+## 🔐 Environment Configuration
+
+Create a `.env` file in the project root and configure the following environment variables:
+
+### 🗄️ Database (PostgreSQL)
 
 ```env
-POSTGRES_DB=your_db
-POSTGRES_USER=your_user
-POSTGRES_PASSWORD=your_password
+POSTGRES_DB=sv_db
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_postgres_password
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
 
-DATABASE_URL=postgres://your_user:your_password@localhost:5432/your_db
-SECRET_KEY=your_secret_key
+DATABASE_URL=postgresql://postgres:your_postgres_password@localhost:5432/sv_db
 ```
 
-### 3. Install dependencies & run migrations
+> For local development, PostgreSQL is recommended.
+> You may replace it with SQLite if needed.
+
+---
+
+### ⚙️ Django Settings
+
+```env
+SECRET_KEY=your_django_secret_key
+DJANGO_SETTINGS_MODULE=app_django.settings
+DEBUG=True
+```
+
+---
+
+### 📧 Email Configuration (Optional)
+
+Used for features such as notifications or password reset.
+
+```env
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+
+EMAIL_HOST_USER=your_email@gmail.com
+EMAIL_HOST_PASSWORD=your_email_app_password
+
+DEFAULT_FROM_EMAIL=your_email@gmail.com
+ADMIN_EMAIL=your_email@gmail.com
+```
+
+> ⚠️ Use **Gmail App Password**, not your real Gmail password.
+
+---
+
+### 🍃 MongoDB (Optional)
+
+Used for storing chat logs or auxiliary data.
+
+```env
+MONGO_URI=mongodb://localhost:27017/vantoan
+MONGO_DB_NAME=vantoan
+```
+
+---
+
+### 🧠 LLM Providers
+
+#### Ollama
+
+```env
+OLLAMA_HOST=https://ollama.com
+OLLAMA_KEY=your_ollama_api_key
+OLLAMA_MODEL=gpt-oss:120b
+```
+
+#### OpenAI (Optional)
+
+```env
+OPENAI_API_KEY=your_openai_api_key
+```
+
+#### Other Models (Optional)
+
+```env
+BIGMODEL_KEY=your_bigmodel_api_key
+DEEPSEEK_KEY=your_deepseek_api_key
+```
+
+---
+
+## ✅ Minimal Required Variables (Quick Start)
+
+If you only want to run the project locally with basic features:
+
+```env
+SECRET_KEY=your_secret_key
+DATABASE_URL=postgresql://postgres:password@localhost:5432/sv_db
+```
+
+
+---
+
+### Create virtual environment & install dependencies
 
 ```bash
-python -m venv venv
-source venv/bin/activate   # Linux/Mac
-# venv\Scripts\activate    # Windows
+python3 -m venv venv
+source venv/bin/activate
 
 pip install -r requirements.txt
-python manage.py migrate
-python manage.py createsuperuser
 ```
 
+---
 
-
-### 4. PostgreSQL Installation
-
-See [PostgreSQL Setup Guide](docs/POSTGRESQL_SETUP.md).
-
-After installation, create database:
+### Apply database migrations
 
 ```bash
-python manage.py create_db
+python manage.py migrate
 ```
 
-### 5. Run the server
+---
+
+### Run the development server
 
 ```bash
 python manage.py runserver
 ```
-- Show Swagger view:
-```bash
-http://localhost:8000/docs
+
+Server will be available at:
+
 ```
-### 6. Run with Docker
+http://127.0.0.1:8000
+```
+Swagger documentation:
+```
+http://127.0.0.1:8000/docs
+```
+---
+
+## 🐳 Run with Docker (Recommended)
 
 ```bash
-docker compose up --build
-# Stop
-docker compose down
+docker-compose up --build
 ```
 
-### 7. Model Training
+This will start:
 
-See [Model Training Guide](provision/ai_models/README.md).
-
-### 8. Pretrained Models
-
-* [Download Faster R-CNN pretrained model](link_here)
-* [Download YOLOv8 pretrained model](link_here)
+* Django backend
+* Database service (if configured)
 
 ---
 
-## Notes
+## 🔄 Application Workflow
 
-* Ensure you have **GPU + NVIDIA Container Toolkit** installed if you want GPU acceleration inside Docker.
-* Logs, checkpoints, and results are stored in `checkpoints/` and `media/`.
+1. User uploads an image or sends a message from the client.
+2. Backend processes the image through the **OCR pipeline**.
+3. Extracted text is passed to the **LLM as a tool input**.
+4. LLM generates a response based on text + conversation context.
+5. Response is streamed back to the client using **SSE**.
 
+---
+
+## ⚠️ Project Scope
+
+* This is a **personal project** built for learning and experimentation.
+* OCR and LLM models are **pretrained and integrated**, not trained from scratch.
+* The system is designed for **personal usage**, not large-scale production.
+
+---
+
+## 📌 Future Improvements
+
+* Improve OCR accuracy for complex layouts and curved text
+* Add file type support (PDF, scanned documents)
+* Enhance conversation memory and summarization
+* Add frontend UI for better user interaction
+
+---
+
+## 📄 License
+
+This project is for **personal and educational purposes**.
+
+---
+
+## 🙋 Author
+
+**Nguyen Van Toan**
+AI Engineer – Fresher
+GitHub: [https://github.com/vantoan2905](https://github.com/vantoan2905)
+
+---
 

@@ -22,14 +22,10 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 INSTALLED_APPS = [
     "corsheaders",
 
-    # Custom apps
-    # "apps.task",
-    # "apps.vision",
-    # "apps.product",
-    "apps.chatbot",
-    # "apps.camera",
-    # "apps.employee",
-
+    "auth_app",
+    "files",
+    "chats",
+    
     # Django core
     "django.contrib.admin",
     "django.contrib.auth",
@@ -54,6 +50,7 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 CORS_ORIGIN_ALLOW_ALL = True
+AUTH_USER_MODEL = "auth_app.CustomUser"
 
 # ------------------------
 # REST Framework settings
@@ -160,6 +157,13 @@ DATABASES = {
     }
 }
 
+
+connect(
+    db="prod_chatbot",
+    host="mongodb://localhost:27017/prod_chatbot"
+)
+
+
 # ------------------------
 # Password validators
 # ------------------------
@@ -206,15 +210,18 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
 
-# ------------------------
-# MongoDB Connection
-# ------------------------
-from mongoengine import connect
 
-connect(
-    db="prod_chatbot",
-    host="mongodb://localhost:27017/prod_chatbot"
-)
-from mongoengine import get_connection
-print("[DEBUG] MONGO CONNECT =", get_connection())
 
+# ------------------------
+# Ollama settings
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+OLLAMA_KEY = os.getenv("OLLAMA_KEY", "")
+OLLAMA_HEADERS = {"Authorization": "Bearer " + OLLAMA_KEY}
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gpt-oss:120b")
+
+
+OPENAI_API_KEY  = os.getenv("OPENAI_API_KEY")
+
+DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
+
+BIGMODEL_KEY = os.getenv("BIGMODEL_KEY")
