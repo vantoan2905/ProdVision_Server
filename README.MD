@@ -9,6 +9,11 @@ The system allows users to upload images, extract text using **OCR**, and pass t
 This project is built **for personal learning and productivity**, focusing on **AI model integration, system design, real-time interaction**, and **context-aware reasoning**, rather than large-scale production.
 
 ---
+# Main view:
+![alt text](media/view/image.png)
+
+--- 
+
 
 ## 🔗 Related Repositories
 
