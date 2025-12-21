@@ -69,6 +69,14 @@ Backend (Django / NestJS)
   ↓
 Client (real-time updates)
 ```
+---
+### 📊 OCR & RAG Flowcharts
+
+#### OCR Pipeline Flow
+![OCR Flow](<media/charts/Untitled Diagram.drawio.png>)
+
+#### RAG Retrieval Flow
+![RAG Flow](<media/charts/RAG.png>)
 
 ---
 
