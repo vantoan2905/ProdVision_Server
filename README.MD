@@ -18,7 +18,7 @@ This project is built **for personal learning and productivity**, focusing on **
 ## 🔗 Related Repositories
 
 * Backend (this repo): [https://github.com/vantoan2905/ProdVision_Server](https://github.com/vantoan2905/ProdVision_Server)
-* Frontend (UI): [https://github.com/vantoan2905/ProdVision_UI](https://github.com/vantoan2905/ProdVision_UI)
+* Frontend (UI): [https://github.com/vantoan2905/prodvision-ai-assistant](https://github.com/vantoan2905/prodvision-ai-assistant)
 
 ---
 
