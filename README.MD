@@ -81,9 +81,9 @@ Client (real-time updates)
 
 ## 🛠️ Tech Stack
 
-* **Backend:** Django, Django REST Framework, NestJS
+* **Backend:** Django
 * **AI / Data Processing:** OCR (PaddleOCR), OpenCV, NumPy, Pandas
-* **LLM Integration:** LangChain, GLM-4-Flash, context-aware prompts, RAG retrieval
+* **LLM Integration:** LangChain, GLM-4.6, context-aware prompts, RAG retrieval
 * **Database:** PostgreSQL, Redis
 * **Realtime Communication:** Server-Sent Events (SSE)
 * **Containerization:** Docker
