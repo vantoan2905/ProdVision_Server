@@ -27,8 +27,8 @@ This project is built **for personal learning and productivity**, focusing on **
 * 📷 **Image Upload & OCR**
   Extracts text from user-uploaded images using pretrained OCR models. Supports both **standard documents** and **tables**, with modular pipelines:
 
-  * **Documents:** Structure Analysis → Merch Patch → Line Detection → Text Recognition → Paragraph Reconstruction
-  * **Tables:** Structure Analysis → Merch Patch → Cell Detection → Line Detection → Text Recognition → Table Reconstruction
+  * **Documents:** Structure Analysis → Region merging → Line Detection → Text Recognition → Paragraph Reconstruction
+  * **Tables:** Structure Analysis → Region merging → Cell Detection → Line Detection → Text Recognition → Table Reconstruction
 
 * 🧠 **Context-aware LLM Integration**
 
