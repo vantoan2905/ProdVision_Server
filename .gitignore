@@ -33,6 +33,8 @@ test_video.*
 /content/
 /staticfiles/
 /static/
+/media/
+/generated/
 
 
 # Installer logs

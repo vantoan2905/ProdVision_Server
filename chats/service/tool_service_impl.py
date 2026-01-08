@@ -12,9 +12,11 @@ from langchain.tools import tool
 
 from datetime import datetime
 from typing import List, Dict, Any
+# from files.models import KnowledgeChunk
 from files.models import KnowledgeChunk
 
 import random
+
 
 # ======================================================
 # Global singletons (performance optimization)
@@ -22,6 +24,16 @@ import random
 
 EMBED_MODEL = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 OCR_READER = easyocr.Reader(['en', 'vi'], gpu=True)
+
+def read_csv():
+    pass
+def read_pdf():
+    pass 
+def chunking():
+    pass
+
+
+
 
 
 # ======================================================
@@ -74,8 +86,6 @@ def _figure_to_tensor(fig) -> np.ndarray:
 # ======================================================
 # OCR Tool
 # ======================================================
-
-@tool("ocr_tool")
 def ocr_tool(img_path: str) -> str:
     """
     Extract text from an image using EasyOCR.
@@ -98,7 +108,6 @@ def ocr_tool(img_path: str) -> str:
 # Semantic Search Tool
 # ======================================================
 
-@tool("database_search")
 def database_search(query: str, keyword: str = "", top_k: int = 5) -> List[Dict[str, Any]]:
     """
     Perform semantic search over the MongoDB knowledge base.
@@ -140,7 +149,6 @@ def database_search(query: str, keyword: str = "", top_k: int = 5) -> List[Dict[
 # Time Tool
 # ======================================================
 
-@tool("time")
 def get_current_time() -> str:
     """
     Get the current server time.
@@ -155,7 +163,6 @@ def get_current_time() -> str:
 # ======================================================
 
 
-@tool("mock_time_series_data")
 def mock_time_series_data(
     start: int = 1,
     end: int = 12,
@@ -182,7 +189,6 @@ def mock_time_series_data(
     return {"labels": labels, "values": values}
 
 
-@tool("mock_category_data")
 def mock_category_data(
     categories: List[str] = None,
     base_value: float = 1000.0,
@@ -209,7 +215,6 @@ def mock_category_data(
     return {"labels": categories, "values": values}
 
 
-@tool("mock_percentage_data")
 def mock_percentage_data(
     categories: List[str] = None
 ) -> Dict[str, List]:
@@ -234,9 +239,7 @@ def mock_percentage_data(
     return {"labels": categories, "values": values}
 
 
-# ================= CHART TOOLS (JSON OUTPUT) =================
 
-@tool("draw_bar_chart")
 def draw_bar_chart(
     labels: List[str],
     values: List[float],
@@ -278,7 +281,6 @@ def draw_bar_chart(
     }
 
 
-@tool("draw_line_chart")
 def draw_line_chart(
     labels: List[str],
     values: List[float],
@@ -320,7 +322,6 @@ def draw_line_chart(
     }
 
 
-@tool("draw_pie_chart")
 def draw_pie_chart(
     labels: List[str],
     values: List[float],

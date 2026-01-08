@@ -75,6 +75,30 @@ SIMPLE_JWT = {
     'SIGNING_KEY': SECRET_KEY,  
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler', # Ghi ra console
+        },
+        'file': {
+            'class': 'logging.FileHandler', # Ghi ra file
+            'filename': 'debug.log',
+        },
+    },
+    'loggers': {
+        'django': { # Log của Django
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'my_app': { # Log của app của bạn
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 
 
 
@@ -222,6 +246,6 @@ OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gpt-oss:120b")
 
 OPENAI_API_KEY  = os.getenv("OPENAI_API_KEY")
 
-DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
 
-BIGMODEL_KEY = os.getenv("BIGMODEL_KEY")
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
