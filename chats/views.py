@@ -1,43 +1,36 @@
 import json
 from django.http import StreamingHttpResponse, JsonResponse
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from chats.service.chat_service_port import ChatServicePort
 from chats.service.provider import get_chat_service
+from auth_app.lib.permissions import JWTOptional
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+class ChatMessageView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
+    def post(self, request, *args, **kwargs):
+        user = request.user
 
-@method_decorator(csrf_exempt, name="dispatch")
-class ChatMessageView(View):
-
-    async def post(self, request, *args, **kwargs):
-        # print("RAW BODY:", request.body)
-
-        try:
-            body = json.loads(request.body.decode("utf-8"))
-        except Exception:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
-
+        body = json.loads(request.body.decode("utf-8"))
         content = body.get("content")
         if not content:
             return JsonResponse({"error": "content is required"}, status=400)
 
-        # get interface
         chat_service: ChatServicePort = get_chat_service()
 
-        async def event_stream():
-            try:
-                async for event in chat_service.stream_chat(content):
-                    yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
-            except Exception as e:
-                yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+        def event_stream():
+            for event in chat_service.stream_chat_sync(content):
+                yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
 
-        response = StreamingHttpResponse(
+        return StreamingHttpResponse(
             event_stream(),
-            content_type="text/event-stream",
+            content_type="text/event-stream"
         )
-        response["Cache-Control"] = "no-cache"
-        response["X-Accel-Buffering"] = "no"
 
-        return response

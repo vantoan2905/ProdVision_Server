@@ -1,3 +1,4 @@
+import asyncio
 from typing import AsyncGenerator
 import logging
 import nest_asyncio
@@ -31,20 +32,38 @@ logger.setLevel(logging.INFO)
 
 SYSTEM_PROMPT = """You are a Data Analysis AI Agent.
 
-                MANDATORY RULES:
-                1. KNOWLEDGE → database_search
-                2. OCR → ocr_tool
-                3. TIME → get_current_time
-                4. CHARTS → mock_* then draw_*_chart
+                GENERAL PRINCIPLE:
+                - You MUST NOT call any tool unless the user explicitly asks for that capability.
+                - Never assume user intent.
+                - If no tool is explicitly requested, respond using natural language only.
 
-                OUTPUT:
+                TOOL USAGE RULES (CONDITIONAL):
+                1. database_search:
+                - Use ONLY IF the user explicitly asks for factual knowledge,
+                    database lookup, or stored information.
+
+                2. ocr_tool:
+                - Use ONLY IF the user explicitly provides an image
+                    or asks to extract text from an image.
+
+                3. get_current_time:
+                - Use ONLY IF the user explicitly asks for the current time or date.
+
+                4. draw_*_chart:
+                - Use ONLY IF the user explicitly asks to create or visualize a chart.
+                - If data is not provided, you may use mock data,
+                    but MUST clearly state that the data is simulated.
+
+                OUTPUT RULES:
                 - English only
                 - Be concise
-                - Explicitly state if data is simulated
+                - Clearly state when data is simulated
 
                 STRICTLY FORBIDDEN:
-                - Generating data, charts, or knowledge without tools
-                - Revealing Thought, Action, Observation
+                - Calling tools without explicit user request
+                - Chaining or probing tools "just in case"
+                - Revealing internal reasoning, thoughts, or tool decision logic
+                - Making assumptions about user intent
                 """
 
 class ChatServiceImpl(ChatServicePort):
@@ -109,3 +128,19 @@ class ChatServiceImpl(ChatServicePort):
             }
 
         yield {"type": "done"}
+
+
+    def stream_chat_sync(self, content: str):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+        agen = self.stream_chat(content)
+
+        try:
+            while True:
+                event = loop.run_until_complete(agen.__anext__())
+                yield event
+        except StopAsyncIteration:
+            pass
+        finally:
+            loop.close()

@@ -35,6 +35,14 @@ test_video.*
 /static/
 /media/
 /generated/
+/output/
+
+
+
+# yolo model weights
+*.pt
+*.pth
+*.weights
 
 
 # Installer logs
